@@ -1,22 +1,21 @@
 #ifndef CFRONTEND2_H
 #define CFRONTEND2_H
 
+#include "cdfmparser.h"
+#include "formpreview.h"
+#include <QDomDocument>
 #include <QMainWindow>
 #include <QStandardItemModel>
-#include <QDomDocument>
-#include "formpreview.h"
-#include "cdfmparser.h"
 
 namespace Ui {
-    class CFrontend2;
+class CFrontend2;
 }
 
-class CFrontend2 : public QMainWindow
-{
+class CFrontend2 : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit CFrontend2(QWidget *parent = 0);
+    explicit CFrontend2(QWidget* parent = 0);
     ~CFrontend2();
 
     void setDfmFilePathList(QStringList list);
@@ -26,25 +25,23 @@ public:
     void storeSettings();
     void loadStettings();
 
-    CDfmParser *parser;
-
+    CDfmParser parser;
 
 private:
-    Ui::CFrontend2 *ui;
-    FormPreview *mFormPreview;
-    QStandardItemModel *mLogModel;
+    Ui::CFrontend2* ui;
+    FormPreview* mFormPreview;
+    QStandardItemModel* mLogModel;
     QColor mPreviewBgColor;
     QString mLastDfmDirPath;
     bool mRememberLastDfms;
 
-    void dumpDomDoc(QDomDocument *domDoc, const char *fileName);
+    void dumpDomDoc(QDomDocument* domDoc, const char* fileName);
     QStringList getListToConvert();
-    void enablePreview(QString &filePath);
+    void enablePreview(QString& filePath);
     void showPreview(QString fileName);
 
-
 public slots:
-    void logText(const QString &text);
+    void logText(const QString& text);
     void parseFiles();
     void togleRememberLastDfms();
 

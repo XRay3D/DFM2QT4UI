@@ -5,22 +5,21 @@
 #include <QtUiTools>
 
 namespace Ui {
-    class FormPreview;
+class FormPreview;
 }
 
-class FormPreview : public QWidget
-{
+class FormPreview : public QWidget {
     Q_OBJECT
 
 public:
-    explicit FormPreview(QWidget *parent = 0);
+    explicit FormPreview(QWidget* parent = 0);
     ~FormPreview();
 
-    int loadUiFile(QString &aFileName, QString *aErrorMsg);
+    int loadUiFile(QString& aFileName, QString* aErrorMsg);
 
 private:
-    Ui::FormPreview *ui;
-    QWidget *mLoadWidget;
+    Ui::FormPreview* ui;
+    QWidget* mLoadWidget;
 };
 
 #endif // FORMPREVIEW_H

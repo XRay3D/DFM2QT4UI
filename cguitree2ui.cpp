@@ -38,21 +38,12 @@
  *
  **/
 
-
 #include "cguitree2ui.h"
 #include <QDebug>
 
+CGuiTree2Ui::CGuiTree2Ui() { }
 
-CGuiTree2Ui::CGuiTree2Ui()
-{
-}
-
-
-
-CGuiTree2Ui::~CGuiTree2Ui()
-{
-}
-
+CGuiTree2Ui::~CGuiTree2Ui() { }
 
 /**
  * Convert specified widget
@@ -63,34 +54,32 @@ CGuiTree2Ui::~CGuiTree2Ui()
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertUnknownWidget(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertUnknownWidget(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QFrame", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::StyledPanel");
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'frameShape'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -101,73 +90,71 @@ int CGuiTree2Ui::convertUnknownWidget(CUiDomElement &aNextUiDomElement, CUiDomEl
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertForm(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertForm(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm;
     aNextUiDomElement.setUiDomKeyValuePair("class", aGuiTreeValueName);
 
     aNextUiDomElement = aUiElm.createUiWidget("QMainWindow", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyGeometry("0","0",
-                                                 aGuiTreeElm.getDomProperty("Width","200"),
-                                                 aGuiTreeElm.getDomProperty("Height","200"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyGeometry("0",
+        "0",
+        aGuiTreeElm.getDomProperty("Width", "200"),
+        aGuiTreeElm.getDomProperty("Height", "200"));
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode( aGuiTreeElm.getDomProperty("Hint") ));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyWindowTitle(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyWindowTitle(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-        CUiDomElement tmpElm;
+    CUiDomElement tmpElm;
 
-        // create element node
-        tmpElm = aUiElm.ownerDocument().createElement("widget");
-        if(tmpElm.isNull())
-            return(-1);
+    // create element node
+    tmpElm = aUiElm.ownerDocument().createElement("widget");
+    if(tmpElm.isNull())
+        return (-1);
 
-        // create attributes
-        tmpElm.setAttribute("class", "QFrame");
-        tmpElm.setAttribute("name", "centralWidget");
-        //add geometry
-        tmpElm.setUiPropertyGeometry("0","0",
-                                  aGuiTreeElm.getDomProperty("Width","200"),
-                                  aGuiTreeElm.getDomProperty("Height","200"));
+    // create attributes
+    tmpElm.setAttribute("class", "QFrame");
+    tmpElm.setAttribute("name", "centralWidget");
+    // add geometry
+    tmpElm.setUiPropertyGeometry("0",
+        "0",
+        aGuiTreeElm.getDomProperty("Width", "200"),
+        aGuiTreeElm.getDomProperty("Height", "200"));
 
-        // append DOM element to uiElm
-        aUiElm.appendChild(tmpElm);
+    // append DOM element to uiElm
+    aUiElm.appendChild(tmpElm);
 
-
-    aNextUiDomElement = tmpElm;//aUiElm..createUiWidget("QFrame","centralWidget");
-    if(aNextUiDomElement.isNull())
-    {
+    aNextUiDomElement = tmpElm; // aUiElm..createUiWidget("QFrame","centralWidget");
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create central widget.");
-        return(-1);
+        return (-1);
     }
 
-
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -178,8 +165,10 @@ int CGuiTree2Ui::convertForm(CUiDomElement &aNextUiDomElement, CUiDomElement &aU
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTBevel(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTBevel(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     QString strBevelShape;
@@ -189,114 +178,98 @@ int CGuiTree2Ui::convertTBevel(CUiDomElement &aNextUiDomElement, CUiDomElement &
     if(strBevelShape.isEmpty())
         strBevelShape = "bsBox";
 
-    aNextUiDomElement = aUiElm.createUiWidget("QFrame",aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    aNextUiDomElement = aUiElm.createUiWidget("QFrame", aGuiTreeValueName);
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     // read in origin geometry values
-    guiTreeTop    = aGuiTreeElm.getDomProperty( "Top", "0").toInt();
-    guiTreeLeft   = aGuiTreeElm.getDomProperty( "Left", "0").toInt();
-    guiTreeWidth  = aGuiTreeElm.getDomProperty( "Width", "15").toInt();
-    guiTreeHeight = aGuiTreeElm.getDomProperty( "Height", "15").toInt();
+    guiTreeTop = aGuiTreeElm.getDomProperty("Top", "0").toInt();
+    guiTreeLeft = aGuiTreeElm.getDomProperty("Left", "0").toInt();
+    guiTreeWidth = aGuiTreeElm.getDomProperty("Width", "15").toInt();
+    guiTreeHeight = aGuiTreeElm.getDomProperty("Height", "15").toInt();
 
     // modify QFrame geometry property to handel different borland lines
-    if(0 == strBevelShape.compare("bsBottomLine", Qt::CaseInsensitive))
-    {
+    if(0 == strBevelShape.compare("bsBottomLine", Qt::CaseInsensitive)) {
         rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::HLine"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
 
         guiTreeHeight = guiTreeHeight * 2;
-    }
-    else if(0 == strBevelShape.compare("bsTopLine", Qt::CaseInsensitive))
-    {
+    } else if(0 == strBevelShape.compare("bsTopLine", Qt::CaseInsensitive)) {
         rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::HLine"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
 
-        guiTreeTop    = guiTreeTop - guiTreeHeight;
+        guiTreeTop = guiTreeTop - guiTreeHeight;
         guiTreeHeight = guiTreeHeight * 2;
-    }
-    else if(0 == strBevelShape.compare("bsLeftLine", Qt::CaseInsensitive))
-    {
+    } else if(0 == strBevelShape.compare("bsLeftLine", Qt::CaseInsensitive)) {
         rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::VLine"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
 
-        guiTreeLeft  = guiTreeLeft - guiTreeWidth;
+        guiTreeLeft = guiTreeLeft - guiTreeWidth;
         guiTreeWidth = guiTreeWidth * 2;
-    }
-    else if(0 == strBevelShape.compare("bsRightLine", Qt::CaseInsensitive))
-    {
+    } else if(0 == strBevelShape.compare("bsRightLine", Qt::CaseInsensitive)) {
         rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::VLine"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
 
         guiTreeWidth = guiTreeWidth * 2;
-    }
-    else if(0 == strBevelShape.compare("bsBox", Qt::CaseInsensitive))
-    {
+    } else if(0 == strBevelShape.compare("bsBox", Qt::CaseInsensitive)) {
         rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::Panel"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
-    }
-    else if(0 == strBevelShape.compare("bsFrame", Qt::CaseInsensitive) || 0 == strBevelShape.compare("bsSpacer", Qt::CaseInsensitive))
-    {
+    } else if(0 == strBevelShape.compare("bsFrame", Qt::CaseInsensitive)
+        || 0 == strBevelShape.compare("bsSpacer", Qt::CaseInsensitive)) {
         rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::Box"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
-    }
-    else
-    {
+    } else {
         logging("Error: Unknown bevel shape " + strBevelShape + " '.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyGeometry(QString::number(guiTreeLeft), QString::number(guiTreeTop), QString::number(guiTreeWidth), QString::number(guiTreeHeight));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyGeometry(QString::number(guiTreeLeft),
+        QString::number(guiTreeTop),
+        QString::number(guiTreeWidth),
+        QString::number(guiTreeHeight));
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyFrameShadow(0 == aGuiTreeElm.getDomProperty("Style").compare("bsRaised", Qt::CaseInsensitive)? QString("QFrame::Raised"): QString("QFrame::Sunken"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyFrameShadow(
+        0 == aGuiTreeElm.getDomProperty("Style").compare("bsRaised", Qt::CaseInsensitive)
+            ? QString("QFrame::Raised")
+            : QString("QFrame::Sunken"));
+    if(rc != 0) {
         logging("Error: Failed to create property 'frameShadow'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -307,8 +280,10 @@ int CGuiTree2Ui::convertTBevel(CUiDomElement &aNextUiDomElement, CUiDomElement &
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTTabControl(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTTabControl(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     QString guitreeTabPos;
@@ -316,27 +291,24 @@ int CGuiTree2Ui::convertTTabControl(CUiDomElement &aNextUiDomElement, CUiDomElem
     QStringList tabCaption;
 
     aNextUiDomElement = aUiElm.createUiWidget("QTabWidget", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyCurrentIndex(aGuiTreeElm.getDomProperty( "TabIndex", "0"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyCurrentIndex(aGuiTreeElm.getDomProperty("TabIndex", "0"));
+    if(rc != 0) {
         logging("Warning: Failed to set currentIndex");
-        return(-1);
+        return (-1);
     }
 
-    guitreeTabPos = aGuiTreeElm.getDomProperty( "TabPosition", "tbLeft");
+    guitreeTabPos = aGuiTreeElm.getDomProperty("TabPosition", "tbLeft");
     if(0 == guitreeTabPos.compare("tbLeft"))
         uiTabPos = "QTabWidget::West";
     else if(0 == guitreeTabPos.compare("tbTop"))
@@ -347,44 +319,41 @@ int CGuiTree2Ui::convertTTabControl(CUiDomElement &aNextUiDomElement, CUiDomElem
         uiTabPos = "QTabWidget::South";
 
     rc = aNextUiDomElement.setUiPropertyTabPosition(uiTabPos);
-    if(rc != 0)
-    {
-        logging("Warning: Failed to set currentIndex to \"" + aGuiTreeElm.getDomProperty( "ActivePage") + "\"");
-        return(-1);
+    if(rc != 0) {
+        logging("Warning: Failed to set currentIndex to \""
+            + aGuiTreeElm.getDomProperty("ActivePage") + "\"");
+        return (-1);
     }
 
     tabCaption = aGuiTreeElm.getTabStrings();
-    while(tabCaption.size() > 0)
-    {
+    while(tabCaption.size() > 0) {
         CUiDomElement uiTabElm;
-        uiTabElm = aNextUiDomElement.createUiWidget("QWidget", aNextUiDomElement.getRandName("tab_", ""));
-        if(aNextUiDomElement.isNull())
-        {
+        uiTabElm = aNextUiDomElement.createUiWidget("QWidget",
+            aNextUiDomElement.getRandName("tab_", ""));
+        if(aNextUiDomElement.isNull()) {
             logging("Error: Failed to create ui widget.");
-            return(-1);
+            return (-1);
         }
 
         rc = uiTabElm.setUiAttributeTitle(aGuiTreeElm.translateToNonQuotedUnicode(tabCaption[0]));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to setup attribute 'title'.");
-            return(-1);
+            return (-1);
         }
 
         // delete used entry
         tabCaption.removeAt(0);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -395,34 +364,35 @@ int CGuiTree2Ui::convertTTabControl(CUiDomElement &aNextUiDomElement, CUiDomElem
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTPageControl(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTPageControl(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     QString guitreeTabPos;
     QString uiTabPos;
     aNextUiDomElement = aUiElm.createUiWidget("QTabWidget", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyCurrentIndex(QString::number(aGuiTreeElm.getNumberOfGuiObject(aGuiTreeElm.getDomProperty( "ActivePage", ""))) );
-    if(rc != 0)
-    {
-        logging("Warning: Failed to set currentIndex to \"" + aGuiTreeElm.getDomProperty( "ActivePage") + "\"");
-        return(-1);
+    rc = aNextUiDomElement.setUiPropertyCurrentIndex(QString::number(
+        aGuiTreeElm.getNumberOfGuiObject(aGuiTreeElm.getDomProperty("ActivePage", ""))));
+    if(rc != 0) {
+        logging("Warning: Failed to set currentIndex to \""
+            + aGuiTreeElm.getDomProperty("ActivePage") + "\"");
+        return (-1);
     }
 
-    guitreeTabPos = aGuiTreeElm.getDomProperty( "TabPosition", "tbTop");
+    guitreeTabPos = aGuiTreeElm.getDomProperty("TabPosition", "tbTop");
     if(0 == guitreeTabPos.compare("tbLeft"))
         uiTabPos = "QTabWidget::West";
     else if(0 == guitreeTabPos.compare("tbTop"))
@@ -433,22 +403,21 @@ int CGuiTree2Ui::convertTPageControl(CUiDomElement &aNextUiDomElement, CUiDomEle
         uiTabPos = "QTabWidget::South";
 
     rc = aNextUiDomElement.setUiPropertyTabPosition(uiTabPos);
-    if(rc != 0)
-    {
-        logging("Warning: Failed to set currentIndex to \"" + aGuiTreeElm.getDomProperty( "ActivePage") + "\"");
-        return(-1);
+    if(rc != 0) {
+        logging("Warning: Failed to set currentIndex to \""
+            + aGuiTreeElm.getDomProperty("ActivePage") + "\"");
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -459,34 +428,34 @@ int CGuiTree2Ui::convertTPageControl(CUiDomElement &aNextUiDomElement, CUiDomEle
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTTabSheet(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTTabSheet(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QWidget", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiAttributeTitle(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiAttributeTitle(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Caption", "")));
+    if(rc != 0) {
         logging("Error: Failed to setup attribute 'title'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -497,65 +466,62 @@ int CGuiTree2Ui::convertTTabSheet(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTButton(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTButton(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QColor color;
 
     aNextUiDomElement = aUiElm.createUiWidget("QPushButton", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyFlat(aGuiTreeElm.getDomProperty( "Flat", "false").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyFlat(aGuiTreeElm.getDomProperty("Flat", "false").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'flat'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aGuiTreeElm.getColor(color, "Font.Color");  // set only if an supported entry exist, instead use default color
-    if(rc == 0)
-    {
+    rc = aGuiTreeElm.getColor(
+        color, "Font.Color"); // set only if an supported entry exist, instead use default color
+    if(rc == 0) {
         rc = aNextUiDomElement.setUiPropertyPalette("WindowText", color);
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'Palette'.");
-            return(-1);
+            return (-1);
         }
     }
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -567,96 +533,86 @@ int CGuiTree2Ui::convertTButton(CUiDomElement &aNextUiDomElement, CUiDomElement 
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTLabel(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTLabel(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QString dfmBorderStyle;
     QColor color;
 
     aNextUiDomElement = aUiElm.createUiWidget("QLabel", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
     // this is only used for TStaticText
     dfmBorderStyle = aGuiTreeElm.getDomProperty("BorderStyle");
-    if(0 == dfmBorderStyle.compare("sbsSingle"))
-    {
+    if(0 == dfmBorderStyle.compare("sbsSingle")) {
         rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Panel");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
 
         rc = aNextUiDomElement.setUiPropertyFrameShadow("QFrame::Plain");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShadow'.");
-            return(-1);
+            return (-1);
         }
-    }
-    else if(0 == dfmBorderStyle.compare("sbsSunken"))
-    {
+    } else if(0 == dfmBorderStyle.compare("sbsSunken")) {
         rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Panel");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
 
         rc = aNextUiDomElement.setUiPropertyFrameShadow("QFrame::Sunken");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShadow'.");
-            return(-1);
+            return (-1);
         }
     }
 
-    rc = aGuiTreeElm.getColor(color, "Font.Color");  // set only if an supported entry exist, instead use default color
-    if(rc == 0)
-    {
+    rc = aGuiTreeElm.getColor(
+        color, "Font.Color"); // set only if an supported entry exist, instead use default color
+    if(rc == 0) {
         rc = aNextUiDomElement.setUiPropertyPalette("WindowText", color);
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'Palette'.");
-            return(-1);
+            return (-1);
         }
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -667,48 +623,46 @@ int CGuiTree2Ui::convertTLabel(CUiDomElement &aNextUiDomElement, CUiDomElement &
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTEdit(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTEdit(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QLineEdit", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Text","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Text", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -719,230 +673,185 @@ int CGuiTree2Ui::convertTEdit(CUiDomElement &aNextUiDomElement, CUiDomElement &a
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTPanel(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTPanel(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QString bevelInner, bevelOuter;
     QColor color;
 
     aNextUiDomElement = aUiElm.createUiWidget("QFrame", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyAlignment(QString("Qt::AlignCenter"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Alignment'.");
-        return(-1);
+        return (-1);
     }
-
 
     rc = aNextUiDomElement.setUiPropertyLayoutDirection(QString("Qt::LeftToRight"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'layoutDirection'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aGuiTreeElm.getColor(color, "Font.Color");  // set only if an supported entry exist, instead use default color
-    if(rc == 0)
-    {
+    rc = aGuiTreeElm.getColor(
+        color, "Font.Color"); // set only if an supported entry exist, instead use default color
+    if(rc == 0) {
         rc = aNextUiDomElement.setUiPropertyPalette("WindowText", color);
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'Palette'.");
-            return(-1);
+            return (-1);
         }
     }
-
-
 
     bevelInner = aGuiTreeElm.getDomProperty("BevelInner", "bvNone");
     bevelOuter = aGuiTreeElm.getDomProperty("BevelOuter", "bvRaised");
-    if(0 == bevelInner.compare("bvLowered"))
-    {
-        if(0 == bevelOuter.compare("bvLowered"))
-        {
+    if(0 == bevelInner.compare("bvLowered")) {
+        if(0 == bevelOuter.compare("bvLowered")) {
             rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::WinPanel");
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to set property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Sunken"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
-        }
-        else if(0 == bevelOuter.compare("bvNone"))
-        {
+        } else if(0 == bevelOuter.compare("bvNone")) {
             rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::Panel"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShape'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Sunken"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
-        }
-        else
-        {
+        } else {
             rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Box");
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to set property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Raised"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
         }
-    }
-    else if(0 == bevelInner.compare("bvNone"))
-    {
-        if(0 == bevelOuter.compare("bvLowered"))
-        {
+    } else if(0 == bevelInner.compare("bvNone")) {
+        if(0 == bevelOuter.compare("bvLowered")) {
             rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Panel");
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to set property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Sunken"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
-        }
-        else if(0 == bevelOuter.compare("bvNone"))
-        {
+        } else if(0 == bevelOuter.compare("bvNone")) {
             rc = aNextUiDomElement.setUiPropertyFrameShape(QString("QFrame::NoFrame"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShape'.");
-                return(-1);
+                return (-1);
             }
-        }
-        else
-        {
+        } else {
             rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Panel");
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to set property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Raised"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
         }
-    }
-    else
-    {
-        if(0 == bevelOuter.compare("bvLowered"))
-        {
+    } else {
+        if(0 == bevelOuter.compare("bvLowered")) {
             rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Box");
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to set property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Sunken"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
-        }
-        else if(0 == bevelOuter.compare("bvNone"))
-        {
+        } else if(0 == bevelOuter.compare("bvNone")) {
             rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Panel");
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to set property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Raised"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
-        }
-        else
-        {
+        } else {
             rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::WinPanel");
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to set property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
 
             rc = aNextUiDomElement.setUiPropertyFrameShadow(QString("QFrame::Raised"));
-            if(rc != 0)
-            {
+            if(rc != 0) {
                 logging("Error: Failed to create property 'frameShadow'.");
-                return(-1);
+                return (-1);
             }
         }
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -953,41 +862,40 @@ int CGuiTree2Ui::convertTPanel(CUiDomElement &aNextUiDomElement, CUiDomElement &
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTGroupBox(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTGroupBox(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QGroupBox", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyTitle(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyTitle(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'title'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -998,60 +906,57 @@ int CGuiTree2Ui::convertTGroupBox(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTCheckBox(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTCheckBox(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QCheckBox", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-    if(0 == aGuiTreeElm.getDomProperty( "State", "cbUnchecked").compare("cbGrayed"))
-    {
+    if(0 == aGuiTreeElm.getDomProperty("State", "cbUnchecked").compare("cbGrayed")) {
         rc = aNextUiDomElement.setUiPropertyCheckable("false");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to setup property 'checkable'.");
-            return(-1);
+            return (-1);
         }
-    }
-    else
-    {
-        rc = aNextUiDomElement.setUiPropertyChecked((0 == aGuiTreeElm.getDomProperty( "State", "cbUnchecked").compare("cbChecked"))? "true": "false");
-        if(rc != 0)
-        {
+    } else {
+        rc = aNextUiDomElement.setUiPropertyChecked(
+            (0 == aGuiTreeElm.getDomProperty("State", "cbUnchecked").compare("cbChecked"))
+                ? "true"
+                : "false");
+        if(rc != 0) {
             logging("Error: Failed to setup property 'checked'.");
-            return(-1);
+            return (-1);
         }
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1062,62 +967,62 @@ int CGuiTree2Ui::convertTCheckBox(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTRadioButton(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTRadioButton(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QRadioButton", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyChecked(aGuiTreeElm.getDomProperty( "Checked", "False").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyChecked(
+        aGuiTreeElm.getDomProperty("Checked", "False").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'checked'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyLayoutDirection((0 == aGuiTreeElm.getDomProperty( "Alignment", "taRightJustify").compare("taRightJustify")? "Qt::LeftToRight": "Qt::RightToLeft"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyLayoutDirection(
+        (0 == aGuiTreeElm.getDomProperty("Alignment", "taRightJustify").compare("taRightJustify")
+                ? "Qt::LeftToRight"
+                : "Qt::RightToLeft"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'layoutDirection'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1128,41 +1033,39 @@ int CGuiTree2Ui::convertTRadioButton(CUiDomElement &aNextUiDomElement, CUiDomEle
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTImage(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTImage(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QGraphicsView", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1173,41 +1076,39 @@ int CGuiTree2Ui::convertTImage(CUiDomElement &aNextUiDomElement, CUiDomElement &
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTStatusBar(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTStatusBar(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QStatusBar", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1218,69 +1119,64 @@ int CGuiTree2Ui::convertTStatusBar(CUiDomElement &aNextUiDomElement, CUiDomEleme
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTScrollBox(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTScrollBox(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QScrollArea", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget QScrollArea.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    aNextUiDomElement = aNextUiDomElement.createUiWidget("QWidget", aGuiTreeValueName+"Contents");
-    if(aNextUiDomElement.isNull())
-    {
+    aNextUiDomElement = aNextUiDomElement.createUiWidget("QWidget", aGuiTreeValueName + "Contents");
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget QWidget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1291,67 +1187,66 @@ int CGuiTree2Ui::convertTScrollBox(CUiDomElement &aNextUiDomElement, CUiDomEleme
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTCSpinEdit(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTCSpinEdit(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QSpinBox", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "MinValue", "-9999")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMinimum(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("MinValue", "-9999")));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'minimum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "MaxValue", "9999")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMaximum(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("MaxValue", "9999")));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'maximum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertySingleStep(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Increment", "1")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertySingleStep(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Increment", "1")));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'singleStep'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyValue(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Value", "0")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyValue(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Value", "0")));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -1363,49 +1258,47 @@ int CGuiTree2Ui::convertTCSpinEdit(CUiDomElement &aNextUiDomElement, CUiDomEleme
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTToolBar(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTToolBar(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc = 0;
     QRect formGeometry;
     CGuiTreeDomElement rootElement;
 
     aNextUiDomElement = aUiElm.createUiWidget("QToolBar", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rootElement = aGuiTreeElm.getRootGuiObject();
     formGeometry = rootElement.getPropertyGeometry();
 
-//    rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getDomProperty( "Left", "0"),
-//                                                 "22",
-//                                                 QString::number(formGeometry.width()),
-//                                                 aGuiTreeElm.getDomProperty( "Height", "21"));
-    if(rc != 0)
-    {
+    //    rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getDomProperty( "Left", "0"),
+    //                                                 "22",
+    //                                                 QString::number(formGeometry.width()),
+    //                                                 aGuiTreeElm.getDomProperty( "Height", "21"));
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1416,49 +1309,47 @@ int CGuiTree2Ui::convertTToolBar(CUiDomElement &aNextUiDomElement, CUiDomElement
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTMainMenu(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTMainMenu(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QRect formGeometry;
     CGuiTreeDomElement rootElement;
 
     aNextUiDomElement = aUiElm.createUiWidget("QMenuBar", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
-
 
     rootElement = aGuiTreeElm.getRootGuiObject();
     formGeometry = rootElement.getPropertyGeometry();
 
-    rc = aNextUiDomElement.setUiPropertyGeometry("0","0",
-                                                 QString::number(formGeometry.width()),
-                                                 aGuiTreeElm.getDomProperty( "Height", "21"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyGeometry("0",
+        "0",
+        QString::number(formGeometry.width()),
+        aGuiTreeElm.getDomProperty("Height", "21"));
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1469,8 +1360,10 @@ int CGuiTree2Ui::convertTMainMenu(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTMenuItem(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTMenuItem(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     /* TMenuItem might be a QMenu or a QAction.
@@ -1480,81 +1373,72 @@ int CGuiTree2Ui::convertTMenuItem(CUiDomElement &aNextUiDomElement, CUiDomElemen
      * 3. else it has to be just an "addaction"-element and also an QAction widget by root widget
      */
 
-    if(aGuiTreeElm.parentNode().getDomProperty("class") == "TMainMenu" ||
-       aGuiTreeElm.hasGuiObjectChildNodes())
-    {
+    if(aGuiTreeElm.parentNode().getDomProperty("class") == "TMainMenu"
+        || aGuiTreeElm.hasGuiObjectChildNodes()) {
         aNextUiDomElement = aUiElm.createUiWidget("QMenu", aGuiTreeValueName);
-        if(aNextUiDomElement.isNull())
-        {
+        if(aNextUiDomElement.isNull()) {
             logging("Error: Failed to create ui widget.");
-            return(-1);
+            return (-1);
         }
 
         // add element to parent node
-        if(aGuiTreeElm.getDomProperty("Action","") == "")
+        if(aGuiTreeElm.getDomProperty("Action", "") == "")
             rc = aUiElm.addUiAddAction(aGuiTreeValueName);
         else
             rc = aUiElm.addUiAddAction(aGuiTreeElm.getDomProperty("Action"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to add an 'addaction' entry.");
-            return(-1);
+            return (-1);
         }
 
-        rc = aNextUiDomElement.setUiPropertyTitle(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption")));
-        if(rc != 0)
-        {
+        rc = aNextUiDomElement.setUiPropertyTitle(
+            aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Caption")));
+        if(rc != 0) {
             logging("Error: Failed to setup property 'title'.");
-            return(-1);
+            return (-1);
         }
 
-        rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-        if(rc != 0)
-        {
+        rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+        if(rc != 0) {
             logging("Error: Failed to setup property 'enabled'.");
-            return(-1);
+            return (-1);
         }
 
-        rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-        if(rc != 0)
-        {
+        rc = aNextUiDomElement.setUiPropertyToolTip(
+            aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+        if(rc != 0) {
             logging("Error: Failed to create property 'toolTip'.");
-            return(-1);
+            return (-1);
         }
-    }
-    else if(0 == aGuiTreeElm.getDomProperty("Caption").compare("'-'"))
-    {
+    } else if(0 == aGuiTreeElm.getDomProperty("Caption").compare("'-'")) {
         rc = aUiElm.addUiAddAction("separator");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to add an 'addaction' entry.");
-            return(-1);
+            return (-1);
         }
 
         // The global action has not to be added!
-    }
-    else
-    {
-        if(aGuiTreeElm.getDomProperty("Action","") == "")
+    } else {
+        if(aGuiTreeElm.getDomProperty("Action", "") == "")
             rc = aUiElm.addUiAddAction(aGuiTreeValueName);
         else
             rc = aUiElm.addUiAddAction(aGuiTreeElm.getDomProperty("Action"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to add an 'addaction' entry.");
-            return(-1);
+            return (-1);
         }
 
-        if(aGuiTreeElm.getDomProperty("Action","") == "")
-            rc = aUiElm.addUiGlobalAction(aGuiTreeValueName, aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Caption")));
-        if(rc != 0)
-        {
+        if(aGuiTreeElm.getDomProperty("Action", "") == "")
+            rc = aUiElm.addUiGlobalAction(aGuiTreeValueName,
+                aGuiTreeElm.translateToNonQuotedUnicode(
+                    aGuiTreeElm.getDomProperty("Caption")));
+        if(rc != 0) {
             logging("Error: Failed to add an global 'action' entry.");
-            return(-1);
+            return (-1);
         }
     }
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -1566,48 +1450,46 @@ int CGuiTree2Ui::convertTMenuItem(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTActionList(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTActionList(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QRect formGeometry;
     CGuiTreeDomElement rootElement;
 
     aNextUiDomElement = aUiElm.createUiWidget("QMenuBar", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
-
 
     rootElement = aGuiTreeElm.getRootGuiObject();
     formGeometry = rootElement.getPropertyGeometry();
 
-    rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getDomProperty( "Left", "0"),
-                                                 aGuiTreeElm.getDomProperty( "Top", "0"),
-                                                 QString::number(formGeometry.width()),
-                                                 aGuiTreeElm.getDomProperty( "Height", "21"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getDomProperty("Left", "0"),
+        aGuiTreeElm.getDomProperty("Top", "0"),
+        QString::number(formGeometry.width()),
+        aGuiTreeElm.getDomProperty("Height", "21"));
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -1619,8 +1501,10 @@ int CGuiTree2Ui::convertTActionList(CUiDomElement &aNextUiDomElement, CUiDomElem
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTAction(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTAction(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     /* TMenuItem might be a QMenu or a QAction.
@@ -1630,83 +1514,73 @@ int CGuiTree2Ui::convertTAction(CUiDomElement &aNextUiDomElement, CUiDomElement 
      * 3. else it has to be just an "addaction"-element and also an QAction widget by root widget
      */
 
-    if(aGuiTreeElm.parentNode().getDomProperty("class") == "TMainMenu" ||
-       aGuiTreeElm.hasGuiObjectChildNodes())
-    {
+    if(aGuiTreeElm.parentNode().getDomProperty("class") == "TMainMenu"
+        || aGuiTreeElm.hasGuiObjectChildNodes()) {
         aNextUiDomElement = aUiElm.createUiWidget("QMenu", aGuiTreeValueName);
-        if(aNextUiDomElement.isNull())
-        {
+        if(aNextUiDomElement.isNull()) {
             logging("Error: Failed to create ui widget.");
-            return(-1);
+            return (-1);
         }
 
         // add element to parent node
-        if(aGuiTreeElm.getDomProperty("Action","") == "")
+        if(aGuiTreeElm.getDomProperty("Action", "") == "")
             rc = aUiElm.addUiAddAction(aGuiTreeValueName);
         else
             rc = aUiElm.addUiAddAction(aGuiTreeElm.getDomProperty("Action"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to add an 'addaction' entry.");
-            return(-1);
+            return (-1);
         }
 
-        rc = aNextUiDomElement.setUiPropertyTitle(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption")));
-        if(rc != 0)
-        {
+        rc = aNextUiDomElement.setUiPropertyTitle(
+            aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Caption")));
+        if(rc != 0) {
             logging("Error: Failed to setup property 'title'.");
-            return(-1);
+            return (-1);
         }
 
-        rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-        if(rc != 0)
-        {
+        rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+        if(rc != 0) {
             logging("Error: Failed to setup property 'enabled'.");
-            return(-1);
+            return (-1);
         }
 
-        rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-        if(rc != 0)
-        {
+        rc = aNextUiDomElement.setUiPropertyToolTip(
+            aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+        if(rc != 0) {
             logging("Error: Failed to create property 'toolTip'.");
-            return(-1);
+            return (-1);
         }
-    }
-    else if(0 == aGuiTreeElm.getDomProperty("Caption").compare("'-'"))
-    {
+    } else if(0 == aGuiTreeElm.getDomProperty("Caption").compare("'-'")) {
         rc = aUiElm.addUiAddAction("separator");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to add an 'addaction' entry.");
-            return(-1);
+            return (-1);
         }
 
         // The global action has not to be added!
-    }
-    else
-    {
-        if(aGuiTreeElm.getDomProperty("Action","") == "")
+    } else {
+        if(aGuiTreeElm.getDomProperty("Action", "") == "")
             rc = aUiElm.addUiAddAction(aGuiTreeValueName);
         else
             rc = aUiElm.addUiAddAction(aGuiTreeElm.getDomProperty("Action"));
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to add an 'addaction' entry.");
-            return(-1);
+            return (-1);
         }
 
-        if(aGuiTreeElm.getDomProperty("Action","") == "")
-            rc = aUiElm.addUiGlobalAction(aGuiTreeValueName, aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Caption")));
-        if(rc != 0)
-        {
+        if(aGuiTreeElm.getDomProperty("Action", "") == "")
+            rc = aUiElm.addUiGlobalAction(aGuiTreeValueName,
+                aGuiTreeElm.translateToNonQuotedUnicode(
+                    aGuiTreeElm.getDomProperty("Caption")));
+        if(rc != 0) {
             logging("Error: Failed to add an global 'action' entry.");
-            return(-1);
+            return (-1);
         }
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1717,69 +1591,66 @@ int CGuiTree2Ui::convertTAction(CUiDomElement &aNextUiDomElement, CUiDomElement 
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTProgressBar(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTProgressBar(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QProgressBar", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyValue(aGuiTreeElm.getDomProperty("Position", "0"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyOrientation(aGuiTreeElm.getDomProperty( "Orientation", "pbHorizontal") == "pbVertical"? "Qt::Vertical" : "Qt::Horizontal");
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyOrientation(
+        aGuiTreeElm.getDomProperty("Orientation", "pbHorizontal") == "pbVertical"
+            ? "Qt::Vertical"
+            : "Qt::Horizontal");
+    if(rc != 0) {
         logging("Error: Failed to setup property 'orinentation'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty( "Min", "0"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty("Min", "0"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'minimum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty( "Max", "100"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty("Max", "100"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'maximum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1790,83 +1661,79 @@ int CGuiTree2Ui::convertTProgressBar(CUiDomElement &aNextUiDomElement, CUiDomEle
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTCGauge(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTCGauge(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QProgressBar", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyValue(aGuiTreeElm.getDomProperty("Progress", "0"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyTextVisible(aGuiTreeElm.getDomProperty("ShowText", "True").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyTextVisible(
+        aGuiTreeElm.getDomProperty("ShowText", "True").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyOrientation(aGuiTreeElm.getDomProperty( "Kind", "gkHorizontalBar") == "gkHorizontalBar"? "Qt::Horizontal" : "Qt::Vertical");
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyOrientation(
+        aGuiTreeElm.getDomProperty("Kind", "gkHorizontalBar") == "gkHorizontalBar"
+            ? "Qt::Horizontal"
+            : "Qt::Vertical");
+    if(rc != 0) {
         logging("Error: Failed to setup property 'orinentation'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty( "MinValue", "0"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty("MinValue", "0"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'minimum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty( "MaxValue", "100"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty("MaxValue", "100"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'maximum'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyAlignment("Qt::AlignCenter");
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'maximum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1877,69 +1744,64 @@ int CGuiTree2Ui::convertTCGauge(CUiDomElement &aNextUiDomElement, CUiDomElement 
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTCSpinBox(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTCSpinBox(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QSpinBox", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty( "MinValue", "0"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty("MinValue", "0"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'minimum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty( "MaxValue", "100"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty("MaxValue", "100"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'maximum'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyValue(aGuiTreeElm.getDomProperty("Value", "0"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertySingleStep(aGuiTreeElm.getDomProperty("Increment", "1"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -1950,76 +1812,73 @@ int CGuiTree2Ui::convertTCSpinBox(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTScrollBar(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTScrollBar(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QScrollBar", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyOrientation(aGuiTreeElm.getDomProperty( "Kind", "gkHorizontalBar") == "gkHorizontalBar"? "Qt::Horizontal" : "Qt::Vertical");
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyOrientation(
+        aGuiTreeElm.getDomProperty("Kind", "gkHorizontalBar") == "gkHorizontalBar"
+            ? "Qt::Horizontal"
+            : "Qt::Vertical");
+    if(rc != 0) {
         logging("Error: Failed to setup property 'orinentation'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty( "Min", "0"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty("Min", "0"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'minimum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty( "Max", "100"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty("Max", "100"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'maximum'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyValue(aGuiTreeElm.getDomProperty("Position", "0"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertySingleStep(aGuiTreeElm.getDomProperty("Increment", "1"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -2030,78 +1889,71 @@ int CGuiTree2Ui::convertTScrollBar(CUiDomElement &aNextUiDomElement, CUiDomEleme
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTMemo(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTMemo(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QString dfmBorderStyle;
     QString dfmLines;
 
     aNextUiDomElement = aUiElm.createUiWidget("QPlainTextEdit", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
     dfmBorderStyle = aGuiTreeElm.getDomProperty("BorderStyle", "bsSingle");
-    if(0 == dfmBorderStyle.compare("bsSingle"))
-    {
+    if(0 == dfmBorderStyle.compare("bsSingle")) {
         rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::Panel");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
 
         rc = aNextUiDomElement.setUiPropertyFrameShadow("QFrame::Sunken");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShadow'.");
-            return(-1);
+            return (-1);
         }
-    }
-    else // bsNone
+    } else // bsNone
     {
         rc = aNextUiDomElement.setUiPropertyFrameShape("QFrame::NoFrame");
-        if(rc != 0)
-        {
+        if(rc != 0) {
             logging("Error: Failed to create property 'frameShape'.");
-            return(-1);
+            return (-1);
         }
     }
 
     dfmLines = aGuiTreeElm.getItemsOf("Lines.Strings");
     rc = aNextUiDomElement.setUiPropertyPlainText(dfmLines);
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'plainText'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -2112,65 +1964,64 @@ int CGuiTree2Ui::convertTMemo(CUiDomElement &aNextUiDomElement, CUiDomElement &a
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTTrackBar(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTTrackBar(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QString tickStyle;
 
     aNextUiDomElement = aUiElm.createUiWidget("QSlider", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty( "Min", "0"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMinimum(aGuiTreeElm.getDomProperty("Min", "0"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'minimum'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty( "Max", "100"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyMaximum(aGuiTreeElm.getDomProperty("Max", "100"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'maximum'.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyValue(aGuiTreeElm.getDomProperty("Position", "0"));
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'value'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyOrientation(aGuiTreeElm.getDomProperty( "Orientation", "trHorizontal") == "trHorizontal"? "Qt::Horizontal" : "Qt::Vertical");
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyOrientation(
+        aGuiTreeElm.getDomProperty("Orientation", "trHorizontal") == "trHorizontal"
+            ? "Qt::Horizontal"
+            : "Qt::Vertical");
+    if(rc != 0) {
         logging("Error: Failed to setup property 'orinentation'.");
-        return(-1);
+        return (-1);
     }
 
     tickStyle = aGuiTreeElm.getDomProperty("TickMarks");
@@ -2180,15 +2031,13 @@ int CGuiTree2Ui::convertTTrackBar(CUiDomElement &aNextUiDomElement, CUiDomElemen
         rc = aNextUiDomElement.setUiPropertyTickPosition("QSlider::TicksBelow");
     else
         rc = aNextUiDomElement.setUiPropertyTickPosition("QSlider::TicksBothSides");
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to setup property 'tickPosition'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -2199,41 +2048,40 @@ int CGuiTree2Ui::convertTTrackBar(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTTreeView(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTTreeView(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QTreeWidget", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -2244,50 +2092,48 @@ int CGuiTree2Ui::convertTTreeView(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTCheckListBox(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTCheckListBox(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QStringList items;
 
     aNextUiDomElement = aUiElm.createUiWidget("QListWidget", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
     items = aGuiTreeElm.getItemListOf("Items.Strings");
     rc = aNextUiDomElement.addUiItemList(items, "Unchecked" /* there are no other info in DFM */);
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to add items.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert specified widget
@@ -2298,48 +2144,47 @@ int CGuiTree2Ui::convertTCheckListBox(CUiDomElement &aNextUiDomElement, CUiDomEl
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTComboBox(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTComboBox(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QStringList items;
 
     aNextUiDomElement = aUiElm.createUiWidget("QComboBox", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
     items = aGuiTreeElm.getItemListOf("Items.Strings");
     rc = aNextUiDomElement.addUiItemList(items);
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to add items.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -2351,61 +2196,61 @@ int CGuiTree2Ui::convertTComboBox(CUiDomElement &aNextUiDomElement, CUiDomElemen
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTRadioGroup(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTRadioGroup(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QStringList items;
 
     aNextUiDomElement = aUiElm.createUiWidget("QGroupBox", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
-    rc = aNextUiDomElement.setUiPropertyTitle(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Caption","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyTitle(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Caption", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'title'.");
-        return(-1);
+        return (-1);
     }
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
     items = aGuiTreeElm.getItemListOf("Items.Strings");
     aNextUiDomElement.setUiPropertyLayoutDirection("Vertical");
-    foreach(QString item, items)
-    {
-        CUiDomElement radiobuttonChild = aUiElm.createUiWidget("QRadioButton",item.replace(" ","_"));
+    foreach(QString item, items) {
+        CUiDomElement radiobuttonChild = aUiElm.createUiWidget("QRadioButton",
+            item.replace(" ", "_"));
         radiobuttonChild.setUiPropertyText(item);
         aNextUiDomElement.appendChild(radiobuttonChild);
     }
 
-    //rc = aNextUiDomElement.addUiItemList(items);
-    //if(rc != 0)
+    // rc = aNextUiDomElement.addUiItemList(items);
+    // if(rc != 0)
     //{
-//        logging("Error: Failed to add items.");
-//        return(-1);
-//    }
+    //         logging("Error: Failed to add items.");
+    //         return(-1);
+    //     }
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -2417,48 +2262,47 @@ int CGuiTree2Ui::convertTRadioGroup(CUiDomElement &aNextUiDomElement, CUiDomElem
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTListBox(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTListBox(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QStringList items;
 
     aNextUiDomElement = aUiElm.createUiWidget("QListWidget", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
     items = aGuiTreeElm.getItemListOf("Items.Strings");
     rc = aNextUiDomElement.addUiItemList(items);
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to add items.");
-        return(-1);
+        return (-1);
     }
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -2470,49 +2314,48 @@ int CGuiTree2Ui::convertTListBox(CUiDomElement &aNextUiDomElement, CUiDomElement
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTDBGrid(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTDBGrid(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
     QStringList items;
 
     aNextUiDomElement = aUiElm.createUiWidget("QTableWidget", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true").toLower());
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(
+        aGuiTreeElm.getDomProperty("Enabled", "true").toLower());
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
 
     items = aGuiTreeElm.getItemListOf("Columns");
-//    rc = aNextUiDomElement.addUiItemList(items);
-//    if(rc != 0)
-//    {
-//        logging("Error: Failed to add items.");
-//        return(-1);
-//    }
+    //    rc = aNextUiDomElement.addUiItemList(items);
+    //    if(rc != 0)
+    //    {
+    //        logging("Error: Failed to add items.");
+    //        return(-1);
+    //    }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Convert given guiObject and all child guiObjects to QT4 UI Objects.
@@ -2526,8 +2369,9 @@ int CGuiTree2Ui::convertTDBGrid(CUiDomElement &aNextUiDomElement, CUiDomElement 
  *
  *
  */
-int CGuiTree2Ui::convertGuiObject(CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, bool aGuiTreeElmIsFirst)
-{
+int CGuiTree2Ui::convertGuiObject(CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    bool aGuiTreeElmIsFirst) {
     QString guiTreeValueClass;
     QString guiTreeValueName;
     CGuiTreeDomElement guiTreeChildElm;
@@ -2538,7 +2382,7 @@ int CGuiTree2Ui::convertGuiObject(CUiDomElement &aUiElm, CGuiTreeDomElement &aGu
 
     // Contition - abort recursive loop?
     if(aGuiTreeElm.isNull())
-        return(0);
+        return (0);
 
     // Init
     QDomImplementation impl;
@@ -2546,338 +2390,243 @@ int CGuiTree2Ui::convertGuiObject(CUiDomElement &aUiElm, CGuiTreeDomElement &aGu
 
     // read in name of instanceof gui element
     rc = aGuiTreeElm.getDomPropertySecure(guiTreeValueName, "name");
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: No name of instance");
-        return(-1);
+        return (-1);
     }
 
     // read in class name of gui element
     rc = aGuiTreeElm.getDomPropertySecure(guiTreeValueClass, "class");
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: No class type");
-        return(-1);
+        return (-1);
     }
     // logging("Class = " + guiTreeValue);
 
     // First one have to be the form
-    if(aGuiTreeElmIsFirst)
-    {
+    if(aGuiTreeElmIsFirst) {
         rc = convertForm(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TBevel")  // look for classes
+            return (-1);
+    } else if(guiTreeValueClass == "TBevel") // look for classes
     {
         rc = this->convertTBevel(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TTabControl")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TTabControl") {
         rc = this->convertTTabControl(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TPageControl")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TPageControl") {
         rc = this->convertTPageControl(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TTabSheet")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TTabSheet") {
         rc = this->convertTTabSheet(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TButton" ||
-            guiTreeValueClass == "TBitBtn" ||
-            guiTreeValueClass == "TSpeedButton" ||
-            guiTreeValueClass == "TLMDDockSpeedButton")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TButton" || guiTreeValueClass == "TBitBtn"
+        || guiTreeValueClass == "TSpeedButton"
+        || guiTreeValueClass == "TLMDDockSpeedButton") {
         rc = this->convertTButton(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TLabel" ||
-            guiTreeValueClass == "TStaticText")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TLabel" || guiTreeValueClass == "TStaticText" || guiTreeValueClass == "TShape") {
         rc = this->convertTLabel(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TMaskEdit")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TMaskEdit") {
         rc = this->convertTEdit(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-        logging("Info: Please adjust inputMask of " + guiTreeValueName + ":QEdit converted from TMaskEdit manually.");
-    }
-    else if(guiTreeValueClass == "TEdit" ||
-            guiTreeValueClass == "TOvcNumericField" ||
-            guiTreeValueClass == "TOvcEdit" ||
-            guiTreeValueClass == "TOvcSimpleField")
-    {
+            return (-1);
+        logging("Info: Please adjust inputMask of " + guiTreeValueName
+            + ":QEdit converted from TMaskEdit manually.");
+    } else if(guiTreeValueClass == "TEdit" || guiTreeValueClass == "TOvcNumericField" || guiTreeValueClass == "TOvcEdit" || guiTreeValueClass == "TOvcSimpleField") {
         rc = this->convertTEdit(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TPanel")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TPanel") {
         rc = this->convertTPanel(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TGroupBox")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TGroupBox") {
         rc = this->convertTGroupBox(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TCheckBox")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TCheckBox") {
         rc = this->convertTCheckBox(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TRadioButton")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TRadioButton") {
         rc = this->convertTRadioButton(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TImage")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TImage") {
         rc = this->convertTImage(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TStatusBar" ||
-            guiTreeValueClass == "TCompStatusBar")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TStatusBar" || guiTreeValueClass == "TCompStatusBar") {
         rc = this->convertTStatusBar(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TScrollBox")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TScrollBox") {
         rc = this->convertTScrollBox(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TCSpinEdit" ||
-            guiTreeValueClass == "TCSpinButton" ||
-            guiTreeValueClass == "TSpinEdit")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TCSpinEdit" || guiTreeValueClass == "TCSpinButton" || guiTreeValueClass == "TSpinEdit" || guiTreeValueClass == "TUpDown") {
         rc = this->convertTCSpinEdit(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TLMDSpinEdit")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TLMDSpinEdit") {
         rc = this->convertTCSpinEdit(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TOvcDateEdit")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TOvcDateEdit") {
         rc = this->convertTOvcDateEdit(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TOvcAttachedLabel")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TOvcAttachedLabel") {
         rc = this->convertTLabel(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TOvcPictureField")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TOvcPictureField") {
         rc = this->convertTEdit(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-        logging("Info: Please adjust inputMask of " + guiTreeValueName + ":QEdit converted from TMaskEdit manually.");
-    }
-    else if(guiTreeValueClass == "TDBGrid")
-    {
+            return (-1);
+        logging("Info: Please adjust inputMask of " + guiTreeValueName
+            + ":QEdit converted from TMaskEdit manually.");
+    } else if(guiTreeValueClass == "TDBGrid") {
         rc = this->convertTDBGrid(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TMainMenu")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TMainMenu") {
         rc = this->convertTMainMenu(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TToolBar")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TToolBar") {
         rc = this->convertTToolBar(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TMenuItem" ||
-            guiTreeValueClass == "TToolButton")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TMenuItem" || guiTreeValueClass == "TToolButton") {
         rc = this->convertTMenuItem(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TPopupMenu")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TPopupMenu") {
         logging("Warning: QT4-Lib has no equivalent to TPopupMenu");
-    }
-    else if(guiTreeValueClass == "TProgressBar")
-    {
+    } else if(guiTreeValueClass == "TProgressBar") {
         rc = this->convertTProgressBar(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TCGauge")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TCGauge") {
         rc = this->convertTCGauge(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TCSpinBox")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TCSpinBox") {
         rc = this->convertTCSpinBox(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TCSpinButton")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TCSpinButton") {
         logging("Warning: QT4-Lib has no equivalent to TCSpinButton");
-    }
-    else if(guiTreeValueClass == "TScrollBar")
-    {
+    } else if(guiTreeValueClass == "TScrollBar") {
         rc = this->convertTScrollBar(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TMemo")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TMemo") {
         rc = this->convertTMemo(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TTrackBar")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TTrackBar") {
         rc = this->convertTTrackBar(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TTreeView")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TTreeView") {
         rc = this->convertTTreeView(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TRadioGroup")
-    {
-        //logging("Warning: QT4-Lib has no equivalent to TRadioGroup");
+            return (-1);
+    } else if(guiTreeValueClass == "TRadioGroup") {
+        // logging("Warning: QT4-Lib has no equivalent to TRadioGroup");
         this->convertTRadioGroup(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TCheckListBox")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TCheckListBox") {
         rc = this->convertTCheckListBox(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TComboBox" ||
-            guiTreeValueClass == "TOvcComboBox")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TComboBox" || guiTreeValueClass == "TOvcComboBox") {
         rc = this->convertTComboBox(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TListBox" ||
-            guiTreeValueClass == "TOvcListBox" ||
-            guiTreeValueClass == "TLMDListBox")
-    {
+            return (-1);
+    } else if(guiTreeValueClass == "TListBox" || guiTreeValueClass == "TOvcListBox"
+        || guiTreeValueClass == "TLMDListBox") {
         rc = this->convertTListBox(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
-    }
-    else if(guiTreeValueClass == "TMSQuery" ||
-            guiTreeValueClass == "TMSConnection" ||
-            guiTreeValueClass == "TDataSource" ||
-            guiTreeValueClass == "TImageList" ||
-            guiTreeValueClass == "TApplicationEvents" )
-    {
-
-    }
-    else if(guiTreeValueClass == "TActionList")
-    {
-        //The action list class doesn't have a direct mirror in Qt, the functions it provides
-        //are provided by QAction objects that are just called by a toolbar or menu or popupmenu
-        //so we convert all of the TAction objects within
+            return (-1);
+    } else if(guiTreeValueClass == "TMSQuery" || guiTreeValueClass == "TMSConnection"
+        || guiTreeValueClass == "TDataSource" || guiTreeValueClass == "TImageList"
+        || guiTreeValueClass == "TApplicationEvents") {
+    } else if(guiTreeValueClass == "TActionList") {
+        // The action list class doesn't have a direct mirror in Qt, the functions it provides
+        // are provided by QAction objects that are just called by a toolbar or menu or popupmenu
+        // so we convert all of the TAction objects within
         guiTreeList = aGuiTreeElm.childNodes();
-        for(int i = 0; i < guiTreeList.count(); i++)
-        {
+        for(int i = 0; i < guiTreeList.count(); i++) {
             QString node_name = guiTreeList.item(i).nodeName();
-            if("guiObject" == guiTreeList.item(i).nodeName())
-            {
+            if("guiObject" == guiTreeList.item(i).nodeName()) {
                 guiTreeChildElm = (CGuiTreeDomElement)guiTreeList.item(i).toElement();
-                    if(aNextUiDomElement.isNull())
-                        aNextUiDomElement = aUiElm;
-                    rc = convertGuiObject(aNextUiDomElement, guiTreeChildElm, false /* not the first element, it doesn't matter if one was added */);
-                    if(rc != 0)
-                        return(-1);
+                if(aNextUiDomElement.isNull())
+                    aNextUiDomElement = aUiElm;
+                rc = convertGuiObject(
+                    aNextUiDomElement,
+                    guiTreeChildElm,
+                    false /* not the first element, it doesn't matter if one was added */);
+                if(rc != 0)
+                    return (-1);
             }
         }
-    }
-    else if(guiTreeValueClass == "TAction")
-    {
-        rc = aUiElm.addUiGlobalAction(guiTreeValueName, aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Caption")));
-        if(rc != 0)
-        {
+    } else if(guiTreeValueClass == "TAction") {
+        rc = aUiElm.addUiGlobalAction(guiTreeValueName,
+            aGuiTreeElm.translateToNonQuotedUnicode(
+                aGuiTreeElm.getDomProperty("Caption")));
+        if(rc != 0) {
             logging("Error: Failed to add an global 'action' entry.");
-            return(-1);
+            return (-1);
         }
-    }
-    else
-    {
+    } else {
         aNextUiDomElementHasUnknownType = true;
-        logging(QString("Warning: Unknown class '") + guiTreeValueName + ":" + guiTreeValueClass + QString("'."));
+        logging(QString("Warning: Unknown class '") + guiTreeValueName + ":" + guiTreeValueClass
+            + QString("'."));
 
         rc = this->convertUnknownWidget(aNextUiDomElement, aUiElm, aGuiTreeElm, guiTreeValueName);
         if(rc != 0)
-            return(-1);
+            return (-1);
     }
 
     // convert all child gui objects
     guiTreeList = aGuiTreeElm.childNodes();
-    for(int i = 0; i < guiTreeList.count(); i++)
-    {
-        if("guiObject" == guiTreeList.item(i).nodeName())
-        {
+    for(int i = 0; i < guiTreeList.count(); i++) {
+        if("guiObject" == guiTreeList.item(i).nodeName()) {
             guiTreeChildElm = (CGuiTreeDomElement)guiTreeList.item(i).toElement();
 
-            if(aNextUiDomElementHasUnknownType)
-            {
+            if(aNextUiDomElementHasUnknownType) {
                 guiTreeValueName = guiTreeChildElm.getDomProperty("name");
                 guiTreeValueClass = guiTreeChildElm.getDomProperty("class");
-                logging("    Skip child element (" + guiTreeValueName + ":" + guiTreeValueClass + ")");
-            }
-            else
-            {
+                logging("    Skip child element (" + guiTreeValueName + ":" + guiTreeValueClass
+                    + ")");
+            } else {
                 if(aNextUiDomElement.isNull())
                     aNextUiDomElement = aUiElm;
-                rc = convertGuiObject(aNextUiDomElement, guiTreeChildElm, false /* not the first element, it doesn't matter if one was added */);
+                rc = convertGuiObject(
+                    aNextUiDomElement,
+                    guiTreeChildElm,
+                    false /* not the first element, it doesn't matter if one was added */);
                 if(rc != 0)
-                    return(-1);
+                    return (-1);
             }
         }
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * @brief Convert given guiTree to QT4 UI format.
@@ -2885,27 +2634,26 @@ int CGuiTree2Ui::convertGuiObject(CUiDomElement &aUiElm, CGuiTreeDomElement &aGu
  * @return 0 = OK
  * @return -1 = Failed
  */
-int CGuiTree2Ui::convert(CUiDomDocument *domDocUi, CGuiTreeDomDocument *domDocGuiTree)
-{
-
+int CGuiTree2Ui::convert(CUiDomDocument* domDocUi, CGuiTreeDomDocument* domDocGuiTree) {
     CUiDomElement domElmUi;
     CGuiTreeDomElement domElmGuiTree;
     int rc;
 
     // get guiTree element node
     domElmGuiTree = domDocGuiTree->getFirstGuiObjectElement();
-    if(domElmGuiTree.isNull())
-    {
+    if(domElmGuiTree.isNull()) {
         logging("Empty guiTree");
-        return(-1);
+        return (-1);
     }
 
     // get ui element node
     domElmUi = domDocUi->init();
 
-    rc = convertGuiObject(domElmUi, domElmGuiTree, true /* this is the first DOM element after root element */);
+    rc = convertGuiObject(domElmUi,
+        domElmGuiTree,
+        true /* this is the first DOM element after root element */);
 
-    return(rc);
+    return (rc);
 }
 
 /**
@@ -2917,43 +2665,42 @@ int CGuiTree2Ui::convert(CUiDomDocument *domDocUi, CGuiTreeDomDocument *domDocGu
  * @param[in] aGuiTreeValueName This is the name of Object.
  * @return 0 on success.
  */
-int CGuiTree2Ui::convertTOvcDateEdit(CUiDomElement &aNextUiDomElement, CUiDomElement &aUiElm, CGuiTreeDomElement &aGuiTreeElm, const QString &aGuiTreeValueName)
-{
+int CGuiTree2Ui::convertTOvcDateEdit(CUiDomElement& aNextUiDomElement,
+    CUiDomElement& aUiElm,
+    CGuiTreeDomElement& aGuiTreeElm,
+    const QString& aGuiTreeValueName) {
     int rc;
 
     aNextUiDomElement = aUiElm.createUiWidget("QDateEdit", aGuiTreeValueName);
-    if(aNextUiDomElement.isNull())
-    {
+    if(aNextUiDomElement.isNull()) {
         logging("Error: Failed to create ui widget.");
-        return(-1);
+        return (-1);
     }
 
     rc = aNextUiDomElement.setUiPropertyGeometry(aGuiTreeElm.getPropertyGeometry());
-    if(rc != 0)
-    {
+    if(rc != 0) {
         logging("Error: Failed to create property 'Geometry'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty( "Text","" /* no default*/ )));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyText(aGuiTreeElm.translateToNonQuotedUnicode(
+        aGuiTreeElm.getDomProperty("Text", "" /* no default*/)));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'text'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty( "Enabled", "true"));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyEnabled(aGuiTreeElm.getDomProperty("Enabled", "true"));
+    if(rc != 0) {
         logging("Error: Failed to setup property 'enabled'.");
-        return(-1);
+        return (-1);
     }
 
-    rc = aNextUiDomElement.setUiPropertyToolTip(aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
-    if(rc != 0)
-    {
+    rc = aNextUiDomElement.setUiPropertyToolTip(
+        aGuiTreeElm.translateToNonQuotedUnicode(aGuiTreeElm.getDomProperty("Hint")));
+    if(rc != 0) {
         logging("Error: Failed to create property 'toolTip'.");
-        return(-1);
+        return (-1);
     }
-    return(0);
+    return (0);
 }

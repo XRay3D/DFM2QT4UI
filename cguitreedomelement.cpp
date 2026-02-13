@@ -1,40 +1,31 @@
 #include "cguitreedomelement.h"
 #include <QDebug>
 #include <QDomDocument>
+#include <QRegularExpression>
 
-CGuiTreeDomElement::CGuiTreeDomElement()
-{
-}
+CGuiTreeDomElement::CGuiTreeDomElement() { }
 
+CGuiTreeDomElement::CGuiTreeDomElement(const QDomElement& aX)
+    : QDomElement(aX) { }
 
-CGuiTreeDomElement::CGuiTreeDomElement( const QDomElement & aX ) : QDomElement(aX)
-{
-}
-
-
-CGuiTreeDomElement CGuiTreeDomElement::parentNode() const
-{
+CGuiTreeDomElement CGuiTreeDomElement::parentNode() const {
     CGuiTreeDomElement rc = QDomNode::parentNode().toElement();
-    return(rc);
+    return (rc);
 }
 
-
-bool CGuiTreeDomElement::hasGuiObjectChildNodes()
-{
+bool CGuiTreeDomElement::hasGuiObjectChildNodes() {
     QDomElement e = this->firstChildElement("guiObject");
     if(e.isNull())
-        return(false);
-    return(true);
+        return (false);
+    return (true);
 }
-
 
 /**
  * Return root guiObject of this element, that is not the "guiRoot" element.
  *
  * @returns CGuiTreeDomElement of first guiObject or a Null-Node if it doesn't exists.
  */
-CGuiTreeDomElement CGuiTreeDomElement::getRootGuiObject()
-{
+CGuiTreeDomElement CGuiTreeDomElement::getRootGuiObject() {
     CGuiTreeDomElement rootObject;
     CGuiTreeDomElement guiObject;
     QDomDocument domDoc;
@@ -43,9 +34,8 @@ CGuiTreeDomElement CGuiTreeDomElement::getRootGuiObject()
     rootObject = domDoc.firstChildElement("guiRoot");
     guiObject = rootObject.firstChildElement("guiObject");
 
-    return(guiObject);
+    return (guiObject);
 }
-
 
 /**
  * Read a value from given GUI object node for a given key. This is the secure way to do this.
@@ -67,39 +57,31 @@ CGuiTreeDomElement CGuiTreeDomElement::getRootGuiObject()
  * @param gutTreeElm Parentnode which is containing the key and value.
  * @return 0 = ok, -1 = Failed
  **/
-int CGuiTreeDomElement::getDomPropertySecure(QString &value, const QString &key)
-{
-    QDomElement guiTreeElm =  this->firstChildElement(key);
-    if(guiTreeElm.isNull())
-    {
+int CGuiTreeDomElement::getDomPropertySecure(QString& value, const QString& key) {
+    QDomElement guiTreeElm = this->firstChildElement(key);
+    if(guiTreeElm.isNull()) {
         // qDebug() << "key doesnt exist";
-        return(-1);
+        return (-1);
     }
 
     QDomNode guiTreeNode = guiTreeElm.firstChild();
 
     // Look for value which have to be the one and only child node.
-    if(!guiTreeNode.isText())
-    {
+    if(!guiTreeNode.isText()) {
         qDebug() << "child isnt a text";
-        return(-1);
+        return (-1);
     }
 
     // Convert value to QString
     QDomText valueNode = guiTreeNode.toText();
-    if(valueNode.isNull())
-    {
+    if(valueNode.isNull()) {
         qDebug() << "value is empty";
-        return(-1);
+        return (-1);
     }
     value = valueNode.data();
 
-    return(0);
+    return (0);
 }
-
-
-
-
 
 /**
  * Read a value from given gui object node for a given key.
@@ -120,15 +102,13 @@ int CGuiTreeDomElement::getDomPropertySecure(QString &value, const QString &key)
  * @param  key name property.
  * @return Value as string if exist or "" if isn't.
  **/
-QString CGuiTreeDomElement::getDomProperty(const QString key)
-{
+QString CGuiTreeDomElement::getDomProperty(const QString key) {
     QString str;
 
     if(0 != getDomPropertySecure(str, key))
-        str = "";  // it doesn't matter, use empty string
-    return(str);
+        str = ""; // it doesn't matter, use empty string
+    return (str);
 }
-
 
 /**
  * Read a value from given gui object node for a given key.
@@ -150,18 +130,15 @@ QString CGuiTreeDomElement::getDomProperty(const QString key)
  * @param  defaultValue Value, used if key does not exist.
  * @return Value as string if exist or defaultValue if isn't.
  **/
-QString CGuiTreeDomElement::getDomProperty(const QString key, const QString defaultValue)
-{
+QString CGuiTreeDomElement::getDomProperty(const QString key, const QString defaultValue) {
     QString str;
 
-    if(0 != getDomPropertySecure(str, key))
-    {
+    if(0 != getDomPropertySecure(str, key)) {
         // qDebug() << QString("cant find ") << key << defaultValue << QString(".");
-        str = defaultValue;  // it doesn't matter, use empty string
+        str = defaultValue; // it doesn't matter, use empty string
     }
-    return(str);
+    return (str);
 }
-
 
 /**
  * Create an DOM element with text content and add  this to a given element.
@@ -171,23 +148,20 @@ QString CGuiTreeDomElement::getDomProperty(const QString key, const QString defa
  * @param value The text content of new DOM element
  * @return 0 on Success else -1.
  **/
-int CGuiTreeDomElement::setDomProperty(const QString key, const QString value)
-{
+int CGuiTreeDomElement::setDomProperty(const QString key, const QString value) {
     QDomDocument domDoc = this->ownerDocument();
     QDomElement tmpDomElm = domDoc.createElement(key);
     if(tmpDomElm.isNull())
-        return(-1);
+        return (-1);
     QDomText tmpDomTxt = domDoc.createTextNode(value);
-    if(tmpDomTxt.isNull())
-    {
+    if(tmpDomTxt.isNull()) {
         tmpDomElm.clear();
-        return(-1);
+        return (-1);
     }
     tmpDomElm.appendChild(tmpDomTxt);
     this->appendChild(tmpDomElm);
-    return(0);
+    return (0);
 }
-
 
 /**
  * Find position of first child-guiObject with matching name.
@@ -196,8 +170,7 @@ int CGuiTreeDomElement::setDomProperty(const QString key, const QString value)
  * @param name Value of guiObject property to search for.
  * @return Position as Integer or 0.
  **/
-int CGuiTreeDomElement::getNumberOfGuiObject(const QString &name)
-{
+int CGuiTreeDomElement::getNumberOfGuiObject(const QString& name) {
     QDomElement e;
     QDomNode n;
     QDomElement s;
@@ -207,28 +180,23 @@ int CGuiTreeDomElement::getNumberOfGuiObject(const QString &name)
     int rc = 0;
 
     e = this->firstChildElement("guiObject");
-    while(!e.isNull())
-    {
+    while(!e.isNull()) {
         s = e.firstChildElement("name");
-        if(s.isNull())
-        {
+        if(s.isNull()) {
             e = e.nextSiblingElement("guiObject");
             continue;
         }
 
         c = s.firstChild();
         // Look for value which have to be the one and only child node.
-        if(!c.isText())
-        {
-
+        if(!c.isText()) {
             e = e.nextSiblingElement("guiObject");
             continue;
         }
 
         valueNode = c.toText();
-        if(valueNode.data() == name)
-        {
-            return(rc);
+        if(valueNode.data() == name) {
+            return (rc);
         }
 
         // increace
@@ -236,9 +204,8 @@ int CGuiTreeDomElement::getNumberOfGuiObject(const QString &name)
         e = e.nextSiblingElement("guiObject");
     }
 
-    return(0);
+    return (0);
 }
-
 
 /**
  * Read out item into a QStringList.
@@ -246,8 +213,7 @@ int CGuiTreeDomElement::getNumberOfGuiObject(const QString &name)
  * @param aName Value of guiObject property to search for.
  * @return Position as Integer or 0.
  **/
-QStringList CGuiTreeDomElement::getItemListOf(const QString &name)
-{
+QStringList CGuiTreeDomElement::getItemListOf(const QString& name) {
     QStringList list;
     QDomElement e;
     QDomElement item;
@@ -256,27 +222,26 @@ QStringList CGuiTreeDomElement::getItemListOf(const QString &name)
 
     e = this->firstChildElement(name);
     if(e.isNull())
-        return(list);
+        return (list);
 
     item = e.firstChildElement("item");
-    while(!item.isNull())
-    {
+    while(!item.isNull()) {
         child = item.firstChild();
         // Look for value which have to be the one and only child node.
-        if(!child.isText())
-        {
+        if(!child.isText()) {
             item = item.nextSiblingElement();
             continue;
         }
         // add to text
         childText = child.toText();
-        list.append(childText.data());;
+        list.append(childText.data());
+        ;
 
         // increace
         item = item.nextSiblingElement();
     }
 
-    return(list);
+    return (list);
 }
 
 /**
@@ -325,8 +290,7 @@ QStringList CGuiTreeDomElement::getItemListOf(const QString &name, const QString
  * @param name Value of guiObject property to search for.
  * @return Position as Integer or 0.
  **/
-QString CGuiTreeDomElement::getItemsOf(const QString &name)
-{
+QString CGuiTreeDomElement::getItemsOf(const QString& name) {
     QString text;
     QDomElement e;
     QDomElement item;
@@ -336,15 +300,13 @@ QString CGuiTreeDomElement::getItemsOf(const QString &name)
 
     e = this->firstChildElement(name);
     if(e.isNull())
-        return(text);
+        return (text);
 
     item = e.firstChildElement("item");
-    while(!item.isNull())
-    {
+    while(!item.isNull()) {
         child = item.firstChild();
         // Look for value which have to be the one and only child node.
-        if(!child.isText())
-        {
+        if(!child.isText()) {
             item = item.nextSiblingElement();
             continue;
         }
@@ -363,9 +325,8 @@ QString CGuiTreeDomElement::getItemsOf(const QString &name)
         item = item.nextSiblingElement();
     }
 
-    return(text);
+    return (text);
 }
-
 
 /**
  * Read out color as QColor.
@@ -396,8 +357,7 @@ QString CGuiTreeDomElement::getItemsOf(const QString &name)
  * @param[in] name tag name of color element.
  * @return 0 on success and else if not.
  **/
-int CGuiTreeDomElement::getColor(QColor &aColor, const QString &aName)
-{
+int CGuiTreeDomElement::getColor(QColor& aColor, const QString& aName) {
     QString colorText;
     qint64 colorInt;
     bool colorIntOk = false;
@@ -411,53 +371,69 @@ int CGuiTreeDomElement::getColor(QColor &aColor, const QString &aName)
 
     e = this->firstChildElement(aName);
     if(e.isNull())
-        return(-1);
+        return (-1);
 
     child = e.firstChild();
     // Look for value which have to be the one and only child node.
     if(!child.isText())
-        return(-1);
+        return (-1);
 
     colorText = child.toText().data();
 
-    if(colorText == "clBlack")        color.setNamedColor("#000000");
-    else if(colorText == "clMaroon")  color.setNamedColor("#000080");
-    else if(colorText == "clGreen")   color.setNamedColor("#000080");
-    else if(colorText == "clOlive")   color.setNamedColor("#008080");
-    else if(colorText == "clNavy")    color.setNamedColor("#000080");
-    else if(colorText == "clPurple")  color.setNamedColor("#800080");
-    else if(colorText == "clTeal")    color.setNamedColor("#008080");
-    else if(colorText == "clGray")    color.setNamedColor("#808080");
-    else if(colorText == "clSilver")  color.setNamedColor("#c0c0c0");
-    else if(colorText == "clRed")     color.setNamedColor("#0000ff");
-    else if(colorText == "clLime")    color.setNamedColor("#0000ff");
-    else if(colorText == "clYellow")  color.setNamedColor("#00ffff");
-    else if(colorText == "clBlue")    color.setNamedColor("#0000ff");
-    else if(colorText == "clFuchsia") color.setNamedColor("#ff00ff");
-    else if(colorText == "clAqua")    color.setNamedColor("#00ffff");
-    else if(colorText == "clLtGray")  color.setNamedColor("#c0c0c0");
-    else if(colorText == "clDkGray")  color.setNamedColor("#808080");
-    else if(colorText == "clWhite")   color.setNamedColor("#ffffff");
-    else
-    {
+    if(colorText == "clBlack")
+        color = "#000000";
+    else if(colorText == "clMaroon")
+        color = "#000080";
+    else if(colorText == "clGreen")
+        color = "#000080";
+    else if(colorText == "clOlive")
+        color = "#008080";
+    else if(colorText == "clNavy")
+        color = "#000080";
+    else if(colorText == "clPurple")
+        color = "#800080";
+    else if(colorText == "clTeal")
+        color = "#008080";
+    else if(colorText == "clGray")
+        color = "#808080";
+    else if(colorText == "clSilver")
+        color = "#c0c0c0";
+    else if(colorText == "clRed")
+        color = "#0000ff";
+    else if(colorText == "clLime")
+        color = "#0000ff";
+    else if(colorText == "clYellow")
+        color = "#00ffff";
+    else if(colorText == "clBlue")
+        color = "#0000ff";
+    else if(colorText == "clFuchsia")
+        color = "#ff00ff";
+    else if(colorText == "clAqua")
+        color = "#00ffff";
+    else if(colorText == "clLtGray")
+        color = "#c0c0c0";
+    else if(colorText == "clDkGray")
+        color = "#808080";
+    else if(colorText == "clWhite")
+        color = "#ffffff";
+    else {
         colorInt = colorText.toInt(&colorIntOk, 10);
-        if(colorIntOk)  // colorText contains an integer value in decimal notation
+        if(colorIntOk) // colorText contains an integer value in decimal notation
         {
             colorByte = colorInt & 0xFF;
-            colorHexText = QString().sprintf("#%02X", colorByte);
+            colorHexText = QString("%1").arg(colorByte, 2, 16, '0');
             colorByte = (colorInt >> 8) & 0xFF;
-            colorHexText += QString().sprintf("%02X", colorByte);
+            colorHexText += QString("%1").arg(colorByte, 2, 16, '0');
             colorByte = (colorInt >> 16) & 0xFF;
-            colorHexText += QString().sprintf("%02X", colorByte);
+            colorHexText += QString("%1").arg(colorByte, 2, 16, '0');
 
-            color.setNamedColor(colorHexText);
+            color = colorHexText;
         }
     }
 
     aColor = color;
-    return(0);
+    return (0);
 }
-
 
 /**
  * Remove quotes and spaces at begin and end of given string.
@@ -466,25 +442,22 @@ int CGuiTreeDomElement::getColor(QColor &aColor, const QString &aName)
  * @return text without quotes
  *
  **/
-QString CGuiTreeDomElement::removeQuotes(QString text)
-{
+QString CGuiTreeDomElement::removeQuotes(QString text) {
     int begin, end;
     int n;
-    //qDebug() << "removeQuotes:" << text;
-
-    begin = text.indexOf(QRegExp("^'")) + 1;
+    // qDebug() << "removeQuotes:" << text;
+    static QRegularExpression re1("^'");
+    begin = text.indexOf(re1) + 1;
     if(begin <= 0)
         begin = 0;
-
-    end = text.indexOf(QRegExp("'$")) - 1;
+    static QRegularExpression re2("'$");
+    end = text.indexOf(re2) - 1;
     if(end < 0)
         end = text.length();
-    //qDebug() << "Res:" << text.mid(begin, n);
+    // qDebug() << "Res:" << text.mid(begin, n);
 
-
-    return(text.mid(begin, end));
+    return (text.mid(begin, end));
 }
-
 
 /**
  * Tranlate ASCII-c-string with special chars into unicode string.
@@ -496,28 +469,25 @@ QString CGuiTreeDomElement::removeQuotes(QString text)
  * @return text with integrated special chars
  *
  **/
-QString CGuiTreeDomElement::substituteAsciiSpecialChars(QString text)
-{
+QString CGuiTreeDomElement::substituteAsciiSpecialChars(QString text) {
     int idx, idxQuote;
     QString textCopy = text;
     int offset = 0;
     QString asciiStr;
     int c;
-
-    do
-    {
+    static QRegularExpression re1("'#[0-9]+'");
+    do {
         // try to find encoded special char
-        idx = textCopy.indexOf(QRegExp("'#[0-9]+'"), offset);
+        idx = textCopy.indexOf(re1, offset);
         if(idx < 0)
             break;
 
         // get ASCII-code
-        asciiStr = textCopy.midRef(idx + 2).toString();
+        asciiStr = textCopy.mid(idx + 2);
 
         // look for next quote, to add space before
         idxQuote = asciiStr.indexOf('\'');
-        if(idxQuote >=0)
-        {
+        if(idxQuote >= 0) {
             asciiStr = asciiStr.left(idxQuote);
         }
 
@@ -525,19 +495,19 @@ QString CGuiTreeDomElement::substituteAsciiSpecialChars(QString text)
         c = (asciiStr.toInt() & 0xFF);
 
         // insert char of ascii-code
-        textCopy.insert(idx, QString(c));
+        textCopy.insert(idx, QChar(c));
 
         // set offset
         offset = idx + 2; // inserted char + one char of found regexp
 
-    }while(true);
+    } while(true);
+    QRegularExpression re2("'#[0-9]+'");
+    textCopy.replace(re2, "");
+    QRegularExpression re3("''");
+    textCopy.replace(re3, "'");
 
-    textCopy.replace(QRegExp("'#[0-9]+'"), "");
-    textCopy.replace(QRegExp("''"), "'");
-
-    return(textCopy);
+    return (textCopy);
 }
-
 
 /**
  * Tranlate ASCII-c-string with special chars and quotes into unicode string without quodes.
@@ -549,11 +519,9 @@ QString CGuiTreeDomElement::substituteAsciiSpecialChars(QString text)
  * @return text with integrated special chars and without quotes
  *
  **/
-QString CGuiTreeDomElement::translateToNonQuotedUnicode(QString text)
-{
-    return(substituteAsciiSpecialChars( removeQuotes(text) ));
+QString CGuiTreeDomElement::translateToNonQuotedUnicode(QString text) {
+    return (substituteAsciiSpecialChars(removeQuotes(text)));
 }
-
 
 /**
  * Analyse this node and return geometry.
@@ -567,60 +535,55 @@ QString CGuiTreeDomElement::translateToNonQuotedUnicode(QString text)
  * @return Geometry of this element.
  *
  **/
-QRect CGuiTreeDomElement::getPropertyGeometry()
-{
-    int x,y,w,h;
+QRect CGuiTreeDomElement::getPropertyGeometry() {
+    int x, y, w, h;
     QString tmp;
 
-
-    if(0 != this->getDomPropertySecure(tmp, "Left"))  // doesn't exist?
+    if(0 != this->getDomPropertySecure(tmp, "Left")) // doesn't exist?
         x = 0;
     else
-        x = tmp.toInt(NULL);  // don't observe number, it has to be a number!
+        x = tmp.toInt(NULL); // don't observe number, it has to be a number!
 
-    if(0 != this->getDomPropertySecure(tmp, "Top"))  // doesn't exist?
+    if(0 != this->getDomPropertySecure(tmp, "Top")) // doesn't exist?
         y = 0;
     else
-        y = tmp.toInt(NULL);  // don't observe number, it has to be a number!
+        y = tmp.toInt(NULL); // don't observe number, it has to be a number!
 
-    if(0 != this->getDomPropertySecure(tmp, "Width") && this->getDomPropertySecure(tmp, "ClientWidth"))  // doesn't exist?
+    if(0 != this->getDomPropertySecure(tmp, "Width")
+        && this->getDomPropertySecure(tmp, "ClientWidth")) // doesn't exist?
         w = 15;
     else
-        w = tmp.toInt(NULL);  // don't observe number, it has to be a number!
+        w = tmp.toInt(NULL); // don't observe number, it has to be a number!
 
-    if(0 != this->getDomPropertySecure(tmp, "Height") && this->getDomPropertySecure(tmp, "ClientHeight"))  // doesn't exist?
+    if(0 != this->getDomPropertySecure(tmp, "Height")
+        && this->getDomPropertySecure(tmp, "ClientHeight")) // doesn't exist?
         h = 15;
     else
-        h = tmp.toInt(NULL);  // don't observe number, it has to be a number!
+        h = tmp.toInt(NULL); // don't observe number, it has to be a number!
 
-    return(QRect(x, y, w, h));
+    return (QRect(x, y, w, h));
 }
-
 
 /**
  * Get list of tabs as string list. The list only contains the captions of tabs.
  *
  * @return A list of tab captions.
  **/
-QStringList CGuiTreeDomElement::getTabStrings()
-{
+QStringList CGuiTreeDomElement::getTabStrings() {
     QDomElement e;
     QDomElement item;
     QStringList list;
     QDomNode child;
     QDomText textNode;
 
-
     e = this->firstChildElement("Tabs.Strings");
     if(e.isNull())
-        return(list);
+        return (list);
 
     item = e.firstChildElement("item");
-    while(!item.isNull())
-    {
+    while(!item.isNull()) {
         child = item.firstChild();
-        if(child.isText())
-        {
+        if(child.isText()) {
             textNode = child.toText();
             list << textNode.data();
         }
@@ -629,11 +592,5 @@ QStringList CGuiTreeDomElement::getTabStrings()
         item = item.nextSiblingElement("item");
     }
 
-    return(list);
+    return (list);
 }
-
-
-
-
-
-

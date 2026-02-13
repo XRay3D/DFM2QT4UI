@@ -1,15 +1,9 @@
 #include "clogger.h"
 
-CLogger::CLogger(QWidget *parent) :
-    QListView(parent)
-{
+CLogger::CLogger(QWidget* parent)
+    : QListView(parent) { }
 
-
-}
-
-
-int CLogger::init()
-{
+int CLogger::init() {
     mLogModel = new QStandardItemModel(5, 4, this);
     mLogModel->setHeaderData(0, Qt::Horizontal, "Name");
     mLogModel->setHeaderData(1, Qt::Horizontal, "DFM-Type");
@@ -30,5 +24,5 @@ int CLogger::init()
 
     this->setModel(mLogModel);
 
-    return(0);
+    return (0);
 }

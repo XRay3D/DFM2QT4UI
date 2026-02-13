@@ -1,11 +1,10 @@
 #ifndef CUIDOMDOCUMENT_H
 #define CUIDOMDOCUMENT_H
 
-#include <QDomDocument>
 #include "cuidomelement.h"
+#include <QDomDocument>
 
-class CUiDomDocument : public QDomDocument
-{
+class CUiDomDocument : public QDomDocument {
 public:
     CUiDomDocument();
 

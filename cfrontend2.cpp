@@ -4,22 +4,22 @@
 #include <QFileDialog>
 
 #include "cdfmparser.h"
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QSettings>
 #include "cguitree2ui.h"
-#include "cuidomdocument.h"
 #include "cguitreedomdocument.h"
+#include "cuidomdocument.h"
+#include <QFileDialog>
 #include <QFileInfo>
+#include <QMessageBox>
+#include <QSettings>
 
 #define APPNAME "DFM2QT4"
 #define ORGNAME "DFM2QT4"
 
+static QRegularExpression re("\\.dfm$");
 
-CFrontend2::CFrontend2(QWidget *parent) :
-        QMainWindow(parent),
-        ui(new Ui::CFrontend2)
-{
+CFrontend2::CFrontend2(QWidget* parent)
+    : QMainWindow(parent)
+    , ui(new Ui::CFrontend2) {
     ui->setupUi(this);
 
     mPreviewBgColor = QColor(53, 227, 22, 50);
@@ -34,25 +34,29 @@ CFrontend2::CFrontend2(QWidget *parent) :
 
     // create qdesigner workbench as preview
     mFormPreview = new FormPreview();
-    parser = new CDfmParser();
-    //connect(parser, SIGNAL(logging(const QString &)), this, SLOT(logText(const QString &)));
-    connect(ui->actionInclude_Binary_Data, SIGNAL(toggled(bool)),parser, SLOT(setConvertBinaryData(bool)));
-    connect(parser, SIGNAL(logging(const QString &)), this, SLOT(logText(const QString &)));
+    // parser = new CDfmParser();
+    // connect(parser, SIGNAL(logging(const QString &)), this, SLOT(logText(const QString &)));
+    connect(ui->actionInclude_Binary_Data,
+        SIGNAL(toggled(bool)),
+        &parser,
+        SLOT(setConvertBinaryData(bool)));
+    connect(&parser, SIGNAL(logging(const QString&)), this, SLOT(logText(const QString&)));
 
     loadStettings();
 }
 
-CFrontend2::~CFrontend2()
-{
+CFrontend2::~CFrontend2() {
     if(mFormPreview)
         delete(mFormPreview);
     delete(mLogModel);
     delete ui;
 }
 
-void CFrontend2::on_btnAddFile_clicked()
-{
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open File"), mLastDfmDirPath, tr("Borland Form (*.dfm);;All (*)"));
+void CFrontend2::on_btnAddFile_clicked() {
+    QStringList fileNames = QFileDialog::getOpenFileNames(this,
+        tr("Open File"),
+        mLastDfmDirPath,
+        tr("Borland Form (*.dfm);;All (*)"));
     if(fileNames.count() <= 0)
         return;
 
@@ -60,15 +64,14 @@ void CFrontend2::on_btnAddFile_clicked()
     storeSettings();
 }
 
-void CFrontend2::on_btnRemoveFile_clicked()
-{
-    QList<QListWidgetItem *>selectedItems;
+void CFrontend2::on_btnRemoveFile_clicked() {
+    QList<QListWidgetItem*> selectedItems;
 
     selectedItems = ui->listToConvert->selectedItems();
     if(selectedItems.count() < 1)
         return;
 
-    for(int i=ui->listToConvert->count() -1 ; i >= 0; i--)
+    for(int i = ui->listToConvert->count() - 1; i >= 0; i--)
         if(ui->listToConvert->item(i)->isSelected())
             ui->listToConvert->takeItem(i);
 
@@ -76,10 +79,8 @@ void CFrontend2::on_btnRemoveFile_clicked()
         ui->btnConvert->setEnabled(false);
 }
 
-
-void CFrontend2::on_listToConvert_itemSelectionChanged()
-{
-    QList<QListWidgetItem *>selectedItems;
+void CFrontend2::on_listToConvert_itemSelectionChanged() {
+    QList<QListWidgetItem*> selectedItems;
 
     selectedItems = ui->listToConvert->selectedItems();
     if(selectedItems.count() <= 0)
@@ -87,21 +88,18 @@ void CFrontend2::on_listToConvert_itemSelectionChanged()
     else
         ui->btnConvert->setText(tr("Convert This"));
 
-    if(selectedItems.count() == 1 && selectedItems[0]->backgroundColor() == mPreviewBgColor )
+    if(selectedItems.count() == 1 && selectedItems[0]->background() == mPreviewBgColor)
         ui->btnPreview->setEnabled(true);
     else
         ui->btnPreview->setEnabled(false);
 }
 
-
-
 /**
  * Write giving text into the frontend.
  */
-void CFrontend2::logText(const QString & text)
-{
-    QStandardItem *logMsg;
-    QStandardItem *logLine;
+void CFrontend2::logText(const QString& text) {
+    QStandardItem* logMsg;
+    QStandardItem* logLine;
     QList<QStandardItem*> logRow;
 
     logLine = new QStandardItem();
@@ -113,18 +111,16 @@ void CFrontend2::logText(const QString & text)
     logRow.append(logMsg);
     logRow.append(logLine);
     mLogModel->appendRow(logRow);
-    //mLogModel->setData(mLogModel->index(logMsg->index(), 1, QModelIndex()), "Hallo");
+    // mLogModel->setData(mLogModel->index(logMsg->index(), 1, QModelIndex()), "Hallo");
 
-    //ui.lwDetails->addItem(text);
+    // ui.lwDetails->addItem(text);
 }
-
 
 /**
  *
  *
  **/
-void CFrontend2::on_btnConvert_clicked()
-{
+void CFrontend2::on_btnConvert_clicked() {
     convert();
 }
 
@@ -132,10 +128,9 @@ void CFrontend2::on_btnConvert_clicked()
  *
  *
  **/
-void CFrontend2::convert()
-{
+void CFrontend2::convert() {
     int rc;
-    CGuiTreeDomDocument *guiTree;
+    CGuiTreeDomDocument* guiTree;
     QString dfmFilePath, uiFilePath, xmlFilePath;
     QStringList pathList;
 
@@ -151,24 +146,23 @@ void CFrontend2::convert()
     guiTree = new CGuiTreeDomDocument();
 
     // Alloc mem for QT UI tree
-    CUiDomDocument *qtDoc = new CUiDomDocument();
+    CUiDomDocument* qtDoc = new CUiDomDocument();
 
     // setup parser
-    //CDfmParser *parser = new CDfmParser();
-    //connect(parser, SIGNAL(logging(const QString &)), this, SLOT(logText(const QString &)));
+    // CDfmParser *parser = new CDfmParser();
+    // connect(parser, SIGNAL(logging(const QString &)), this, SLOT(logText(const QString &)));
 
     // Alloc converter
-    CGuiTree2Ui *converter = new CGuiTree2Ui();
-    connect(converter, SIGNAL(logging(const QString &)), this, SLOT(logText(const QString &)));
+    CGuiTree2Ui* converter = new CGuiTree2Ui();
+    connect(converter, SIGNAL(logging(const QString&)), this, SLOT(logText(const QString&)));
 
-    for(int i = 0; i < pathList.count(); i++)
-    {
+    for(int i = 0; i < pathList.count(); i++) {
         dfmFilePath = pathList[i];
         uiFilePath = pathList[i];
-        uiFilePath.remove(QRegExp("\.dfm$"));
+        uiFilePath.remove(re);
         uiFilePath.append(".ui");
         xmlFilePath = pathList[i];
-        xmlFilePath.remove(QRegExp("\.dfm$"));
+        xmlFilePath.remove(re);
         xmlFilePath.append(".xml");
 
         qtDoc->clear();
@@ -177,9 +171,8 @@ void CFrontend2::convert()
         logText("--- " + dfmFilePath + " ---");
 
         // parse file
-        rc = parser->parseFile(guiTree, dfmFilePath.toLatin1().constData());
-        if(rc != 0)
-        {
+        rc = parser.parseFile(guiTree, dfmFilePath.toLatin1().constData());
+        if(rc != 0) {
             logText("Failed to parse DFM file.");
             continue;
         }
@@ -188,8 +181,7 @@ void CFrontend2::convert()
         /* Conver guiTree to an QT4 UI file */
         if(0 != converter->convert(qtDoc, guiTree))
             logText("Failed to convert into UI format");
-        else
-        {
+        else {
             this->enablePreview(dfmFilePath);
             logText("Converted successfully");
         }
@@ -203,7 +195,7 @@ void CFrontend2::convert()
     }
 
     // free mem
-    delete(parser);
+    // delete(parser);
     delete(guiTree);
     delete(qtDoc);
     delete(converter);
@@ -212,10 +204,9 @@ void CFrontend2::convert()
     on_listToConvert_itemSelectionChanged();
 }
 
-void CFrontend2::parseFiles()
-{
+void CFrontend2::parseFiles() {
     int rc;
-    CGuiTreeDomDocument *guiTree;
+    CGuiTreeDomDocument* guiTree;
     QString dfmFilePath, uiFilePath, xmlFilePath;
     QStringList pathList;
 
@@ -231,31 +222,27 @@ void CFrontend2::parseFiles()
     guiTree = new CGuiTreeDomDocument();
 
     // Alloc mem for QT UI tree
-    //CUiDomDocument *qtDoc = new CUiDomDocument();
+    // CUiDomDocument *qtDoc = new CUiDomDocument();
 
     // setup parser
 
-
-
-    for(int i = 0; i < pathList.count(); i++)
-    {
+    for(int i = 0; i < pathList.count(); i++) {
         dfmFilePath = pathList[i];
         uiFilePath = pathList[i];
-        uiFilePath.remove(QRegExp("\.dfm$"));
+        uiFilePath.remove(re);
         uiFilePath.append(".ui");
         xmlFilePath = pathList[i];
-        xmlFilePath.remove(QRegExp("\.dfm$"));
+        xmlFilePath.remove(re);
         xmlFilePath.append(".xml");
 
-        //qtDoc->clear();
+        // qtDoc->clear();
         guiTree->clear();
 
         logText("--- " + dfmFilePath + " ---");
 
         // parse file
-        rc = parser->parseFile(guiTree, dfmFilePath.toLatin1().constData());
-        if(rc != 0)
-        {
+        rc = parser.parseFile(guiTree, dfmFilePath.toLatin1().constData());
+        if(rc != 0) {
             logText("Failed to parse DFM file.");
             continue;
         }
@@ -266,8 +253,8 @@ void CFrontend2::parseFiles()
     }
 
     // free mem
-    delete(parser);
-    //delete(qtDoc);
+    // delete(parser);
+    // delete(qtDoc);
 
     // refresh view
     on_listToConvert_itemSelectionChanged();
@@ -278,99 +265,82 @@ void CFrontend2::parseFiles()
  *
  * @param domDoc XML DOM document to write out
  */
-void CFrontend2::dumpDomDoc(QDomDocument *domDoc, const char * fileName)
-{
+void CFrontend2::dumpDomDoc(QDomDocument* domDoc, const char* fileName) {
     ofstream uiFileStream;
     uiFileStream.open(fileName);
-    if(!uiFileStream.is_open())
-    {
+    if(!uiFileStream.is_open()) {
         logText("Can't open UI file.");
-    }
-    else
-    {
+    } else {
         // output
-        uiFileStream << (string) domDoc->toString(1).toUtf8();
+        uiFileStream << (string)domDoc->toString(1).toUtf8();
 
         // close files
         uiFileStream.close();
     }
 }
 
-
 /**
  * Get list of
  *
  *
  **/
-QStringList CFrontend2::getListToConvert()
-{
-    QList<QListWidgetItem *> widgetList;
+QStringList CFrontend2::getListToConvert() {
+    QList<QListWidgetItem*> widgetList;
     QStringList fileList;
     int i;
 
     widgetList = ui->listToConvert->selectedItems();
-    if(widgetList.count() > 0)
-    {
+    if(widgetList.count() > 0) {
         for(i = 0; i < widgetList.count(); i++)
             fileList.append(widgetList[i]->data(Qt::DisplayRole).toString());
-    }
-    else
-    {
-        for(i=0; i < ui->listToConvert->count(); i++)
+    } else {
+        for(i = 0; i < ui->listToConvert->count(); i++)
             fileList.append(ui->listToConvert->item(i)->data(Qt::DisplayRole).toString());
     }
 
-    return(fileList);
+    return (fileList);
 }
-
 
 /**
  *
  *
  *
  **/
-void CFrontend2::enablePreview(QString &filePath)
-{
-    QList <QListWidgetItem *>listItem;
+void CFrontend2::enablePreview(QString& filePath) {
+    QList<QListWidgetItem*> listItem;
 
     listItem = ui->listToConvert->findItems(filePath, Qt::MatchExactly);
     if(listItem.count() <= 0)
         return;
 
     for(int i = 0; i < listItem.count(); i++)
-        listItem[0]->setBackgroundColor(mPreviewBgColor);
+        listItem[0]->setBackground(mPreviewBgColor);
 }
-
 
 /**
  * Show a preview of converted file.
  * Name of file is UI-Name at GUI.
  */
-void CFrontend2::on_btnPreview_clicked()
-{
+void CFrontend2::on_btnPreview_clicked() {
     QString fileName;
-    QList<QListWidgetItem *>selectedItems;
+    QList<QListWidgetItem*> selectedItems;
 
     // init.
     selectedItems = ui->listToConvert->selectedItems();
-    if(selectedItems.count() >= 1)
-    {
+    if(selectedItems.count() >= 1) {
         fileName = selectedItems[0]->data(Qt::DisplayRole).toString();
-        fileName.remove(QRegExp("\.dfm$"));
+        fileName.remove(re);
         fileName.append(".ui");
         showPreview(fileName);
-    }
-    else
+    } else
         ui->btnPreview->setEnabled(false);
 }
-
 
 /**
  * Show a preview of converted file.
  * Name of file is UI-Name at GUI.
  */
-void CFrontend2::showPreview(QString fileName)
-{
+void CFrontend2::showPreview(QString fileName) {
     QString errorMsg;
     int rc;
 
@@ -381,13 +351,11 @@ void CFrontend2::showPreview(QString fileName)
         this->logText(errorMsg);
 }
 
-
 /**
  *
  *
  */
-void CFrontend2::setDfmFilePathList(QStringList list)
-{
+void CFrontend2::setDfmFilePathList(QStringList list) {
     QFileInfo fi;
 
     if(list.isEmpty())
@@ -401,33 +369,30 @@ void CFrontend2::setDfmFilePathList(QStringList list)
     mLastDfmDirPath = fi.dir().path();
 }
 
-
-void CFrontend2::on_listToConvert_doubleClicked(QModelIndex index)
-{
-    if(ui->listToConvert->item(index.row())->backgroundColor() == mPreviewBgColor )
-        showPreview(ui->listToConvert->item(index.row())->data(Qt::DisplayRole).toString().replace(".dfm", ".ui"));
+void CFrontend2::on_listToConvert_doubleClicked(QModelIndex index) {
+    if(ui->listToConvert->item(index.row())->background() == mPreviewBgColor)
+        showPreview(ui->listToConvert->item(index.row())
+                ->data(Qt::DisplayRole)
+                .toString()
+                .replace(".dfm", ".ui"));
 }
-
 
 /**
  *
  *
  *
  **/
-void CFrontend2::loadLastDfms()
-{
+void CFrontend2::loadLastDfms() {
     QSettings s(ORGNAME, APPNAME);
     ui->listToConvert->addItems(s.value("gui/lastdfms", "").toStringList());
 
     // delete empty lines
-    QListWidgetItem *item;
-    for(int i=0; i < ui->listToConvert->count(); i++)
-    {
+    QListWidgetItem* item;
+    for(int i = 0; i < ui->listToConvert->count(); i++) {
         item = ui->listToConvert->item(0);
         if(item == NULL)
             break;
-        if(item->text().isEmpty())
-        {
+        if(item->text().isEmpty()) {
             ui->listToConvert->takeItem(i);
             i--;
         }
@@ -438,13 +403,11 @@ void CFrontend2::loadLastDfms()
         ui->btnConvert->setEnabled(true);
 }
 
-
 /**
  * Load settings.
  *
  **/
-void CFrontend2::loadStettings()
-{
+void CFrontend2::loadStettings() {
     bool rememberLastDfms;
     QSettings s(ORGNAME, APPNAME);
     mLastDfmDirPath = s.value("gui/lastdfmdirpath", ".").toString();
@@ -452,33 +415,28 @@ void CFrontend2::loadStettings()
     setRememberLastDfms(rememberLastDfms);
 }
 
-
 /**
  * Save settings.
  *
  **/
-void CFrontend2::storeSettings()
-{
+void CFrontend2::storeSettings() {
     QStringList lastDfms;
 
     QSettings s(ORGNAME, APPNAME);
     s.setValue("gui/lastdfmdirpath", mLastDfmDirPath);
     s.setValue("gui/rememberlastdfms", mRememberLastDfms);
-    if(mRememberLastDfms)
-    {
+    if(mRememberLastDfms) {
         for(int i = 0; i < ui->listToConvert->count(); i++)
             lastDfms.append(ui->listToConvert->item(i)->data(Qt::DisplayRole).toString());
     }
     s.setValue("gui/lastdfms", lastDfms);
 }
 
-
 /**
  *
  *
  **/
-void CFrontend2::setRememberLastDfms(bool state)
-{
+void CFrontend2::setRememberLastDfms(bool state) {
     QPalette palette;
     if(state == mRememberLastDfms)
         return;
@@ -492,21 +450,13 @@ void CFrontend2::setRememberLastDfms(bool state)
     ui->btnTogleRememberLastDfms->setPalette(palette);
 }
 
-
 /**
  *
  *
  **/
-void CFrontend2::togleRememberLastDfms()
-{
+void CFrontend2::togleRememberLastDfms() {
     setRememberLastDfms(!mRememberLastDfms);
     storeSettings();
 }
 
-
-
-
-void CFrontend2::on_actionRemember_Last_Directory_triggered()
-{
-
-}
+void CFrontend2::on_actionRemember_Last_Directory_triggered() { }

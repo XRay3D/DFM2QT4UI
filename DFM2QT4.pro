@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = DFM2QT4
 QT += core \
     xml \
-    gui
+    gui widgets
 HEADERS += \
     cguitree2ui.h \
     cuidomdocument.h \

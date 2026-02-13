@@ -1,26 +1,22 @@
-
-#include <stdio.h>
-#include <QtDebug>
 #include "cguitreedomdocument.h"
+#include <QtDebug>
+#include <stdio.h>
 
-CGuiTreeDomDocument::CGuiTreeDomDocument()
-{
+CGuiTreeDomDocument::CGuiTreeDomDocument() {
     QDomImplementation impl;
     impl.setInvalidDataPolicy(QDomImplementation::ReturnNullNode);
 }
-
 
 /**
  * Get first "guiObject" located in "guiRoot".
  *
  * @return Node element of first guiObject or an empty element node if there is none.
  **/
-CGuiTreeDomElement CGuiTreeDomDocument::getFirstGuiObjectElement()
-{
+CGuiTreeDomElement CGuiTreeDomDocument::getFirstGuiObjectElement() {
     CGuiTreeDomElement domElmGuiTree;
 
-    domElmGuiTree   = this->firstChildElement("guiRoot");
+    domElmGuiTree = this->firstChildElement("guiRoot");
     if(domElmGuiTree.isNull())
-        return(domElmGuiTree);
-    return(domElmGuiTree.firstChildElement("guiObject"));
+        return (domElmGuiTree);
+    return (domElmGuiTree.firstChildElement("guiObject"));
 }

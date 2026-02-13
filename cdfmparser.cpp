@@ -7,22 +7,16 @@
  */
 
 #include "cdfmparser.h"
-#include <sstream>
-#include <fstream>
-#include <stdio.h>
-#include <math.h>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <fstream>
+#include <math.h>
+#include <sstream>
+#include <stdio.h>
 
+CDfmParser::CDfmParser() { }
 
-CDfmParser::CDfmParser()
-{
-}
-
-
-CDfmParser::~CDfmParser()
-{
-}
-
+CDfmParser::~CDfmParser() { }
 
 /**
  * @brief Parse given file into given XML document.
@@ -33,18 +27,16 @@ CDfmParser::~CDfmParser()
  * @return 0 = ok
  * @return -1 = error
  */
-int CDfmParser::parseFile(CGuiTreeDomDocument *guiTree, const char *filename)
-{
+int CDfmParser::parseFile(CGuiTreeDomDocument* guiTree, const char* filename) {
     // Set domDoc to given guiTree
     domDoc = guiTree;
 
     // Set filename.
     if(setDfmFileName(filename))
-        return(-1);
+        return (-1);
 
-    return(parseFile());
+    return (parseFile());
 }
-
 
 /**
  * @brief Start parsing file, which filename was set up before.
@@ -53,15 +45,14 @@ int CDfmParser::parseFile(CGuiTreeDomDocument *guiTree, const char *filename)
  * @return 0 = ok
  * @return -1 = error
  */
-int CDfmParser::parseFile()
-{
+int CDfmParser::parseFile() {
     string str;
     string substr;
     string menuitem;
     stringstream sstr;
 
     CGuiTreeDomElement curDomElm;
-    QDomProcessingInstruction  domDocUiHeader;
+    QDomProcessingInstruction domDocUiHeader;
     QDomElement tmpDomElm;
     QDomText tmpDomTxt;
     QDomElement rootDomElm;
@@ -70,92 +61,97 @@ int CDfmParser::parseFile()
     string pairValue;
     enumDfmValueInfo pairValueInfo;
     int parserReturnCode = 0;
-    int rc;  // tmp return code
+    int rc; // tmp return code
 
     // Repare XML document
     rootDomElm = domDoc->createElement("guiRoot");
     // Mark file as xml file
-    domDocUiHeader = domDoc->createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
+    domDocUiHeader = domDoc->createProcessingInstruction("xml",
+        "version=\"1.0\" encoding=\"UTF-8\"");
     domDoc->appendChild(domDocUiHeader);
-
 
     domDoc->appendChild(rootDomElm);
     curDomElm = rootDomElm;
 
     dfmFileStream.open(dfmFileName.data());
-    if(!dfmFileStream.is_open())
-    {
+    if(!dfmFileStream.is_open()) {
         logging("Can't open DFM file.");
-        return(-1);
+        return (-1);
     }
     lineNum = 0;
 
-    while(getline(dfmFileStream, str))
-    {
+    while(getline(dfmFileStream, str)) {
         lineNum++;
         trimSpaces(str);
 
-        if(isDfmObjectLine(str))
-        {
+        if(isDfmObjectLine(str)) {
             tmpDomElm = domDoc->createElement("guiObject");
             curDomElm.appendChild(tmpDomElm);
-            curDomElm = tmpDomElm;  // set new node as current node
-            curDomElm.setAttribute("name",QString(getDfmObjectName(str).c_str()));
+            curDomElm = tmpDomElm; // set new node as current node
+            curDomElm.setAttribute("name", QString(getDfmObjectName(str).c_str()));
             curDomElm.setAttribute("class", QString(getDfmObjectType(str).c_str()));
 
             curDomElm.setDomProperty("name", getDfmObjectName(str).c_str());
             curDomElm.setDomProperty("class", getDfmObjectType(str).c_str());
-        }
-        else if(isDfmObjectEndLine(str))
-        {
+        } else if(isDfmObjectEndLine(str)) {
             tmpDomElm = curDomElm.parentNode().toElement();
-            if(curDomElm == rootDomElm)
-            {
-                logging(QString("Error: more object closed by \"end\" as opened before. (line %1)").arg(lineNum));
+            if(curDomElm == rootDomElm) {
+                logging(QString("Error: more object closed by \"end\" as opened before. (line %1)")
+                        .arg(lineNum));
                 parserReturnCode = -1;
-            }
-            else
+            } else
                 curDomElm = tmpDomElm;
-        }
-        else if(isDfmKeyValuePair(str))
-        {
+        } else if(isDfmKeyValuePair(str)) {
             pairKey = getDfmPairKey(str);
             pairValue = getDfmPairValue(str);
 
             pairValueInfo = getDfmValueInfo(pairValue);
-            switch(pairValueInfo)
-            {
+            switch(pairValueInfo) {
             case dviNormal:
                 curDomElm.setDomProperty(QString(pairKey.data()), QString(pairValue.data()));
                 break;
             case dviBinStart:
-                rc = parseBinaryValueLines(domDoc, curDomElm, QString(pairKey.data()), QString(pairValue.data()));
-                    if(rc != 0)
-                        parserReturnCode = -1;
+                rc = parseBinaryValueLines(domDoc,
+                    curDomElm,
+                    QString(pairKey.data()),
+                    QString(pairValue.data()));
+                if(rc != 0)
+                    parserReturnCode = -1;
                 break;
             case dviPanelItemsStart:
-                rc = parsePanelItemsValueLines(domDoc, curDomElm, QString(pairKey.data()), QString(pairValue.data()));
+                rc = parsePanelItemsValueLines(domDoc,
+                    curDomElm,
+                    QString(pairKey.data()),
+                    QString(pairValue.data()));
                 if(rc != 0)
                     parserReturnCode = -1;
                 break;
             case dviStringItemsStart:
-                rc = parseStringItemsValueLines(domDoc, curDomElm, QString(pairKey.data()), QString(pairValue.data()));
+                rc = parseStringItemsValueLines(domDoc,
+                    curDomElm,
+                    QString(pairKey.data()),
+                    QString(pairValue.data()));
                 if(rc != 0)
                     parserReturnCode = -1;
                 break;
             case dviNextLine:
-                rc = parseLongTextValueLines(domDoc, curDomElm, QString(pairKey.data()), QString(pairValue.data()));
+                rc = parseLongTextValueLines(domDoc,
+                    curDomElm,
+                    QString(pairKey.data()),
+                    QString(pairValue.data()));
                 if(rc != 0)
                     parserReturnCode = -1;
                 break;
             default:
-                logging(QString("Can't understand value of line %1 with \"%2\".").arg(lineNum).arg(QString(str.data())));
+                logging(QString("Can't understand value of line %1 with \"%2\".")
+                        .arg(lineNum)
+                        .arg(QString(str.data())));
                 break;
             }
-        }
-        else
-        {
-            logging(QString("Can't understand line %1 with \"%2\".").arg(lineNum).arg(QString(str.data())));
+        } else {
+            logging(QString("Can't understand line %1 with \"%2\".")
+                    .arg(lineNum)
+                    .arg(QString(str.data())));
             parserReturnCode = -1;
         }
     }
@@ -163,9 +159,8 @@ int CDfmParser::parseFile()
     // close files
     dfmFileStream.close();
 
-    return(parserReturnCode);
+    return (parserReturnCode);
 }
-
 
 /**
  * @brief Parse Lines for an binary key-value-pair.
@@ -182,28 +177,28 @@ int CDfmParser::parseFile()
  * @return 0 ok
  * @return -1 Failed
  */
-int CDfmParser::parseBinaryValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value)
-{
+int CDfmParser::parseBinaryValueLines(CGuiTreeDomDocument* domDoc,
+    CGuiTreeDomElement& domElm,
+    QString key,
+    QString value) {
     string line;
     enumDfmValueInfo pairValueInfo;
-
-    while(getline(dfmFileStream, line))
-    {
+    QRegularExpression re("[{}]");
+    while(getline(dfmFileStream, line)) {
         lineNum++;
         trimSpaces(line);
         pairValueInfo = getDfmValueInfo(line);
-        switch(pairValueInfo)
-        {
+        switch(pairValueInfo) {
         case dviNormal:
-            value.append(QString(line.data())+"\n");
+            value.append(QString(line.data()) + "\n");
             break;
         case dviBinEnd:
             value += QString(line.data());
-            value.replace(QRegExp("[{}]"),"");
+            value.replace(re, "");
             // append key-value-pair to dom object
             if(ConvertBinaryData)
                 domElm.setDomProperty(key, value);
-            return(0);
+            return (0);
             break;
         case dviPanelItemsEnd:
         case dviStringItemsEnd:
@@ -212,14 +207,14 @@ int CDfmParser::parseBinaryValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomEl
         case dviStringItemsStart:
         default:
             logging(QString("Error: Unexpected end of binary value in line %1").arg(lineNum));
-            return(-1);
+            return (-1);
             break;
         }
     }
-    logging(QString("Error: Unexpected end of file, while parsing binary-values at line %1.").arg(lineNum));
-    return(-1);
+    logging(QString("Error: Unexpected end of file, while parsing binary-values at line %1.")
+            .arg(lineNum));
+    return (-1);
 }
-
 
 /**
  * Parse Lines for an panel items key-value-pair.
@@ -248,8 +243,10 @@ int CDfmParser::parseBinaryValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomEl
  * @return 0 ok
  * @return -1 Failed
  */
-int CDfmParser::parsePanelItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value)
-{
+int CDfmParser::parsePanelItemsValueLines(CGuiTreeDomDocument* domDoc,
+    CGuiTreeDomElement& domElm,
+    QString key,
+    QString value) {
     string line;
     enumDfmValueInfo pairValueInfo;
     CGuiTreeDomElement domSubElm;
@@ -258,21 +255,20 @@ int CDfmParser::parsePanelItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeD
     domSubElm = domDoc->createElement(key);
     domElm.appendChild(domSubElm);
 
-    while(getline(dfmFileStream, line))
-    {
+    while(getline(dfmFileStream, line)) {
         lineNum++;
         trimSpaces(line);
         if(isDfmKeyValuePair(line))
-            domSubElm.setDomProperty(QString(getDfmPairKey(line).data()), QString(getDfmPairValue(line).data()));
-        else
-        {
+            domSubElm.setDomProperty(QString(getDfmPairKey(line).data()),
+                QString(getDfmPairValue(line).data()));
+        else {
             pairValueInfo = getDfmValueInfo(line);
-            switch(pairValueInfo)
-            {
+            switch(pairValueInfo) {
             case dviPanelItemsEnd:
-                return(0);
+                return (0);
                 break;
-            case dviNormal: break;  // "item" and "end"
+            case dviNormal:
+                break; // "item" and "end"
             case dviBinEnd:
             case dviStringItemsEnd:
             case dviBinStart:
@@ -280,15 +276,15 @@ int CDfmParser::parsePanelItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeD
             case dviStringItemsStart:
             default:
                 logging(QString("Error: Unexpected end of panel array in line %1").arg(lineNum));
-                return(-1);
+                return (-1);
                 break;
             }
         }
     }
-    logging(QString("Error: Unexpected end of file, while parsing panel-items at line %1.").arg(lineNum));
-    return(-1);
+    logging(QString("Error: Unexpected end of file, while parsing panel-items at line %1.")
+            .arg(lineNum));
+    return (-1);
 }
-
 
 /**
  * Parse Lines for an string items key-value-pair.
@@ -302,8 +298,10 @@ int CDfmParser::parsePanelItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeD
  * @return 0 ok
  * @return -1 Failed
  */
-int CDfmParser::parseStringItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value)
-{
+int CDfmParser::parseStringItemsValueLines(CGuiTreeDomDocument* domDoc,
+    CGuiTreeDomElement& domElm,
+    QString key,
+    QString value) {
     string line;
     enumDfmValueInfo pairValueInfo;
     CGuiTreeDomElement domSubElm;
@@ -312,23 +310,21 @@ int CDfmParser::parseStringItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTree
     // Create child node with key as name
     domSubElm = domDoc->createElement(key);
     domElm.appendChild(domSubElm);
-
-    while(getline(dfmFileStream, line))
-    {
+    QRegularExpression re("[()']");
+    while(getline(dfmFileStream, line)) {
         lineNum++;
         trimSpaces(line);
 
         pairValueInfo = getDfmValueInfo(line);
-        switch(pairValueInfo)
-        {
+        switch(pairValueInfo) {
         case dviNormal:
         case dviStringItemsEnd:
             item = QString(line.data());
-            item.replace(QRegExp("[()']"),"");
+            item.replace(re, "");
             domSubElm.setDomProperty("item", item);
 
             if(pairValueInfo == dviStringItemsEnd)
-                return(0);
+                return (0);
             break;
         case dviBinEnd:
         case dviPanelItemsEnd:
@@ -337,14 +333,14 @@ int CDfmParser::parseStringItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTree
         case dviStringItemsStart:
         default:
             logging(QString("Error: Unexpected end of string array in line %1").arg(lineNum));
-            return(-1);
+            return (-1);
             break;
         }
     }
-    logging(QString("Error: Unexpected end of file, while parsing string-items at line %1.").arg(lineNum));
-    return(-1);
+    logging(QString("Error: Unexpected end of file, while parsing string-items at line %1.")
+            .arg(lineNum));
+    return (-1);
 }
-
 
 /**
  * @brief Parse Lines for long text key-value-pair.
@@ -358,37 +354,35 @@ int CDfmParser::parseStringItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTree
  * @return 0 ok
  * @return -1 Failed
  */
-int CDfmParser::parseLongTextValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value)
-{
-
+int CDfmParser::parseLongTextValueLines(CGuiTreeDomDocument* domDoc,
+    CGuiTreeDomElement& domElm,
+    QString key,
+    QString value) {
     QString nvalue;
     string line;
     bool runLoop = true;
 
-    do
-    {
+    do {
         // read in line
         getline(dfmFileStream, line);
-        if(dfmFileStream.eof())
-        {
-            logging(QString("Error: Unexpected end of file, while parsing multiline String at line %1.").arg(lineNum));
-            return(-1);
+        if(dfmFileStream.eof()) {
+            logging(
+                QString("Error: Unexpected end of file, while parsing multiline String at line %1.")
+                    .arg(lineNum));
+            return (-1);
         }
         lineNum++;
         trimSpaces(line);
 
         // look  for " +"
-        if(0 == line.compare( line.length() - 2, 2, " +", 0, 2))
-        {
+        if(0 == line.compare(line.length() - 2, 2, " +", 0, 2)) {
             // remove " +"
             line.erase(line.length() - 2, 2);
-        }
-        else // finished reading
+        } else // finished reading
             runLoop = false;
 
         // remove last '\'' char of nvalue and first '\'' char of line, if
-        if(!nvalue.isEmpty())
-        {
+        if(!nvalue.isEmpty()) {
             nvalue.chop(1);
             line.erase(0, 1);
         }
@@ -396,15 +390,13 @@ int CDfmParser::parseLongTextValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDom
         // append
         nvalue.append(line.c_str());
 
-    }while(runLoop);
+    } while(runLoop);
 
     // write guitree
     domElm.setDomProperty(key, nvalue);
 
-    return(0);
-
+    return (0);
 }
-
 
 /**
  * Set DFM file name.
@@ -412,83 +404,71 @@ int CDfmParser::parseLongTextValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDom
  * @return 0 = ok
  * @return -1 = Failed
  */
-int CDfmParser::setDfmFileName(const char *filename)
-{
+int CDfmParser::setDfmFileName(const char* filename) {
     if(filename == NULL)
-        return(-1);
+        return (-1);
 
     dfmFileName = filename;
 
-    return(0);
+    return (0);
 }
 
 /**
  * @brief Set the value of ConvertBinaryData
  * @param value
  */
-void CDfmParser::setConvertBinaryData(bool value)
-{
+void CDfmParser::setConvertBinaryData(bool value) {
     if(value == NULL)
         this->ConvertBinaryData = false;
     else
         this->ConvertBinaryData = value;
 }
 
-bool CDfmParser::isDfmObjectLine(const string str)
-{
-    if(str.find("object", 0) != string::npos &&
-            str.find(":", 0) != string::npos)
-        return(true);
-    return(false);
+bool CDfmParser::isDfmObjectLine(const string str) {
+    if(str.find("object", 0) != string::npos && str.find(":", 0) != string::npos)
+        return (true);
+    return (false);
 }
 
-bool CDfmParser::isDfmObjectEndLine(const string str)
-{
+bool CDfmParser::isDfmObjectEndLine(const string str) {
     string s = str;
     trimSpaces(s);
     if(s.compare("end") == 0) // equal?
-        return(true);
-    return(false);
+        return (true);
+    return (false);
 }
 
-string CDfmParser::getDfmObjectName(const string line)
-{
-    string name = line.substr((line.find_first_of("t", 0)+2), line.length());
+string CDfmParser::getDfmObjectName(const string line) {
+    string name = line.substr((line.find_first_of("t", 0) + 2), line.length());
     name = name.substr(0, name.find_first_of(":", 0));
-    return(name);
+    return (name);
 }
 
-string CDfmParser::getDfmObjectType(const string line)
-{
-    string type = line.substr((line.find_first_of(":", 0)+2), line.length());
-    return(type);
+string CDfmParser::getDfmObjectType(const string line) {
+    string type = line.substr((line.find_first_of(":", 0) + 2), line.length());
+    return (type);
 }
-
-
 
 /**
  *
  * sample: Font.Charset = DEFAULT_CHARSET
  */
-bool CDfmParser::isDfmKeyValuePair(const string line)
-{
+bool CDfmParser::isDfmKeyValuePair(const string line) {
     size_t pos;
     bool found;
 
     // look for first non space char (key)
-    for(pos=0, found=false; pos<line.length(); pos++)
-    {
+    for(pos = 0, found = false; pos < line.length(); pos++) {
         if(isspace(line.at(pos)))
             continue;
         found = true;
         break;
     }
     if(!found)
-        return(false);
+        return (false);
 
     // look for first space after the key
-    for(found=false; pos<line.length(); pos++)
-    {
+    for(found = false; pos < line.length(); pos++) {
         if(!isspace(line.at(pos)))
             continue;
         found = true;
@@ -499,12 +479,11 @@ bool CDfmParser::isDfmKeyValuePair(const string line)
 #if 1
     if(line.compare(pos, 2, " =", 2) == 0)
 #else
-    if(line.length() < pos + 3 ||
-            line.at(pos + 0) != ' ' ||
-            line.at(pos + 1) != '=' ||
-            line.at(pos + 1) != ' ')
+    if(line.length() < pos + 3 || line.at(pos + 0) != ' ' || line.at(pos + 1) != '='
+        || line.at(pos + 1) != ' ')
 #endif
-        return(true);
+        return (true);
+    return false;
 }
 
 /**
@@ -514,60 +493,57 @@ bool CDfmParser::isDfmKeyValuePair(const string line)
  * @param[in] value String with value information.
  * @return enumDfmValueInfo
  */
-CDfmParser::enumDfmValueInfo CDfmParser::getDfmValueInfo(const string value)
-{
+CDfmParser::enumDfmValueInfo CDfmParser::getDfmValueInfo(const string value) {
     size_t pos;
     const char spaces[] = " \t\r\n";
 
     // Search for non-spaces at the end
     pos = value.find_last_not_of(spaces);
     if(pos == string::npos)
-        return(dviNextLine);
+        return (dviNextLine);
 
     // look for binary data
     if(value[pos] == '}')
-        return(dviBinEnd);
+        return (dviBinEnd);
 
     // look for panel items
     if(value[pos] == '>')
-        return(dviPanelItemsEnd);
+        return (dviPanelItemsEnd);
 
     // look for string items
     if(value[pos] == ')')
-        return(dviStringItemsEnd);
+        return (dviStringItemsEnd);
 
     // Search for non-spaces at the beginning
     pos = value.find_first_not_of(spaces);
 
     // look for binary data
     if(value[pos] == '{')
-        return(dviBinStart);
+        return (dviBinStart);
 
     // look for panel items
     if(value[pos] == '<')
-        return(dviPanelItemsStart);
+        return (dviPanelItemsStart);
 
     // look for string items
     if(value[pos] == '(')
-        return(dviStringItemsStart);
+        return (dviStringItemsStart);
 
-    return(dviNormal);
+    return (dviNormal);
 }
-
 
 /**
  *
  * @param[in] line DFM file line like "   Font.Name = 'MS Sans Serif'"
  */
-string CDfmParser::getDfmPairKey(const string line)
-{
+string CDfmParser::getDfmPairKey(const string line) {
     string rs;
     size_t pos;
 
     // look for pos of '=' char
     pos = line.find_first_of('=');
     if(pos == string::npos)
-        return(rs);  // no key-value-pair
+        return (rs); // no key-value-pair
 
     // substring
     rs = line.substr(0, pos);
@@ -575,44 +551,40 @@ string CDfmParser::getDfmPairKey(const string line)
     // Remove white spaces at begin and end.
     trimSpaces(rs);
 
-    return(rs);
+    return (rs);
 }
 
 /**
  *
  * @param[in] line DFM file line like "   Font.Name = 'MS Sans Serif'"
  */
-string CDfmParser::getDfmPairValue(const string line)
-{
+string CDfmParser::getDfmPairValue(const string line) {
     string rs;
     size_t pos;
 
     // look for pos of '=' char
     pos = line.find_first_of('=');
     if(pos == string::npos || pos >= line.length())
-        return(rs);  // no key-value-pair
+        return (rs); // no key-value-pair
 
     // substring
-    rs = line.substr(pos + 1, line.length() - (pos  + 1));
+    rs = line.substr(pos + 1, line.length() - (pos + 1));
 
     // Remove white spaces at begin and end.
     trimSpaces(rs);
 
-    return(rs);
+    return (rs);
 }
-
 
 /**
  * Remove leading and trailing spaces
  */
-void CDfmParser::trimSpaces(string& strText)
-{
+void CDfmParser::trimSpaces(string& strText) {
     const char spaces[] = " \t\r\n";
 
     // Search spaces at the beginning
     string::size_type nFirst = strText.find_first_not_of(spaces);
-    if(nFirst == string::npos)
-    {
+    if(nFirst == string::npos) {
         // Only spaces. Empty the string
         strText.erase();
         return;

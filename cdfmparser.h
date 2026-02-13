@@ -8,12 +8,12 @@
 #ifndef FORMPARSER_V2_H_
 #define FORMPARSER_V2_H_
 
-#include <QtGui/QWidget>
+#include "cguitreedomdocument.h"
+#include "cguitreedomelement.h"
+#include <QWidget>
 #include <fstream>
 #include <stdio.h>
 #include <string.h>
-#include "cguitreedomdocument.h"
-#include "cguitreedomelement.h"
 
 using namespace std;
 
@@ -21,8 +21,7 @@ using namespace std;
  * \brief Parser that produces an XML representation of a Delphi text mode DFM file.
  *
  */
-class CDfmParser : public QObject
-{
+class CDfmParser : public QObject {
     Q_OBJECT
 
 public:
@@ -30,19 +29,19 @@ public:
     virtual ~CDfmParser();
 
 public slots:
-    int parseFile(CGuiTreeDomDocument *guiTree, const char *filename);
+    int parseFile(CGuiTreeDomDocument* guiTree, const char* filename);
     int parseFile();
-    int setDfmFileName(const char *filename);
+    int setDfmFileName(const char* filename);
     void setConvertBinaryData(bool value);
 
 signals:
     /**
      * Signal: Logging message.
      */
-    void logging(const QString & text);
+    void logging(const QString& text);
 
 private:
-    string   dfmFileName;
+    string dfmFileName;
     ifstream dfmFileStream;
 
     /**
@@ -61,8 +60,16 @@ private:
      * @var dviStringItemsEnd End of String items, data are also on this line.
      * @var dviNextLine Value is on the next line.
      */
-    enum enumDfmValueInfo{dviNormal=0, dviBinStart, dviBinEnd, dviPanelItemsStart,
-                          dviPanelItemsEnd, dviStringItemsStart, dviStringItemsEnd,dviNextLine};
+    enum enumDfmValueInfo {
+        dviNormal = 0,
+        dviBinStart,
+        dviBinEnd,
+        dviPanelItemsStart,
+        dviPanelItemsEnd,
+        dviStringItemsStart,
+        dviStringItemsEnd,
+        dviNextLine
+    };
     bool ConvertBinaryData;
 
     bool isDfmObjectLine(const string str);
@@ -75,12 +82,24 @@ private:
     string getDfmPairValue(const string line);
 
     void trimSpaces(string& strText);
-    int parseBinaryValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value);
-    int parsePanelItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value);
-    int parseStringItemsValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value);
-    int parseLongTextValueLines(CGuiTreeDomDocument *domDoc, CGuiTreeDomElement &domElm, QString key, QString value);
+    int parseBinaryValueLines(CGuiTreeDomDocument* domDoc,
+        CGuiTreeDomElement& domElm,
+        QString key,
+        QString value);
+    int parsePanelItemsValueLines(CGuiTreeDomDocument* domDoc,
+        CGuiTreeDomElement& domElm,
+        QString key,
+        QString value);
+    int parseStringItemsValueLines(CGuiTreeDomDocument* domDoc,
+        CGuiTreeDomElement& domElm,
+        QString key,
+        QString value);
+    int parseLongTextValueLines(CGuiTreeDomDocument* domDoc,
+        CGuiTreeDomElement& domElm,
+        QString key,
+        QString value);
 
-    CGuiTreeDomDocument *domDoc;
+    CGuiTreeDomDocument* domDoc;
 };
 
 #endif /* FORMPARSER_V2_H_ */

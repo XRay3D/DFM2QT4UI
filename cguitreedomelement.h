@@ -1,16 +1,15 @@
 #ifndef CGUITREEDOMELEMENT_H
 #define CGUITREEDOMELEMENT_H
 
+#include <QColor>
 #include <QDomElement>
 #include <QRect>
 #include <QStringList>
-#include <QColor>
 
-class CGuiTreeDomElement : public QDomElement
-{
+class CGuiTreeDomElement : public QDomElement {
 public:
     CGuiTreeDomElement();
-    CGuiTreeDomElement(const QDomElement & x);
+    CGuiTreeDomElement(const QDomElement& x);
     CGuiTreeDomElement parentNode() const;
 
     // input
@@ -18,14 +17,14 @@ public:
 
     // output
     QString getDomProperty(const QString key);
-    int getDomPropertySecure(QString &value, const QString &key);
+    int getDomPropertySecure(QString& value, const QString& key);
     QString getDomProperty(const QString key, const QString defaultValue);
-    int getNumberOfGuiObject(const QString &name);
+    int getNumberOfGuiObject(const QString& name);
     QRect getPropertyGeometry();
     QStringList getTabStrings();
-    QString getItemsOf(const QString &aName);
-    int getColor(QColor &aColor, const QString &aName);
-    QStringList getItemListOf(const QString &aName);
+    QString getItemsOf(const QString& aName);
+    int getColor(QColor& aColor, const QString& aName);
+    QStringList getItemListOf(const QString& aName);
 
     // process
     QString removeQuotes(QString text);

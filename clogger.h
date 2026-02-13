@@ -4,20 +4,18 @@
 #include <QListView>
 #include <QStandardItemModel>
 
-class CLogger : public QListView
-{
+class CLogger : public QListView {
     Q_OBJECT
 
-    QStandardItemModel *mLogModel;
+    QStandardItemModel* mLogModel;
 
 public:
-    explicit CLogger(QWidget *parent = 0);
+    explicit CLogger(QWidget* parent = 0);
     int init();
 
 signals:
 
 public slots:
-
 };
 
 #endif // CLOGGER_H

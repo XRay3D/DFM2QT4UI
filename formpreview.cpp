@@ -1,53 +1,44 @@
 #include "formpreview.h"
 #include "ui_formpreview.h"
 #include <QFile>
-#include <QVBoxLayout>
 #include <QFormBuilder>
+#include <QVBoxLayout>
 
-
-FormPreview::FormPreview(QWidget *parent) :
-        QWidget(parent),
-        mLoadWidget(NULL),
-        ui(new Ui::FormPreview)
-{
+FormPreview::FormPreview(QWidget* parent)
+    : QWidget(parent)
+    , mLoadWidget(NULL)
+    , ui(new Ui::FormPreview) {
     ui->setupUi(this);
 }
 
-
-FormPreview::~FormPreview()
-{
+FormPreview::~FormPreview() {
     delete ui;
 }
 
-
-int FormPreview::loadUiFile(QString &aFileName, QString *aErrorMsg)
-{
+int FormPreview::loadUiFile(QString& aFileName, QString* aErrorMsg) {
     QFormBuilder builder;
-    QWidget *childWidget;
+    QWidget* childWidget;
     QFile file;
-    QVBoxLayout *layout;
+    QVBoxLayout* layout;
     QRect rectChildWidget;
 
     // clear widget loaded before
-    if(mLoadWidget != NULL)
-    {
+    if(mLoadWidget != NULL) {
         delete(mLoadWidget);
         mLoadWidget = NULL;
     }
 
     file.setFileName(aFileName);
-    if(!file.open(QFile::ReadOnly))
-    {
+    if(!file.open(QFile::ReadOnly)) {
         *aErrorMsg = QString("The file ") + aFileName + " could not be opened.";
-        return(-1);
+        return (-1);
     }
 
     childWidget = builder.load(&file, this);
     file.close();
-    if(childWidget == NULL)
-    {
+    if(childWidget == NULL) {
         *aErrorMsg = QString("The file ") + aFileName + " could not be loaded.";
-        return(-1);
+        return (-1);
     }
     mLoadWidget = childWidget;
 
@@ -60,5 +51,5 @@ int FormPreview::loadUiFile(QString &aFileName, QString *aErrorMsg)
     setLayout(layout);
 
     *aErrorMsg = "";
-    return(0);
+    return (0);
 }
